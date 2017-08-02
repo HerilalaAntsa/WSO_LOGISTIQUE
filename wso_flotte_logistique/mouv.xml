@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+    	<record id="trajet_tree_view" model="ir.ui.view">
+            <field name="name">wso.feu.trajet</field>
+            <field name="model">wso.feu.trajet</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="trajet de livraison" create="false">
+                	<field name="vehicle_id"/>
+					<field name="date_liv"/>
+					<field name="dist_parc"/>
+					<field name="temps_parcours"/>
+                	<field name="vitesse"/>
+                	<field name="vitesse_max"/>
+                </tree>
+            </field>
+        </record>
+
+		    <record model='ir.ui.view' id='trajet_search'>
+            <field name="name">wso.feu.trajet</field>
+            <field name="model">wso.feu.trajet</field>
+            <field name="arch" type="xml">
+                <search string="Vehicule" >
+                  <field name="vehicle_id"/>
+					<field name="date_liv"/>
+					<field name="dist_parc"/>
+					<field name="temps_parcours" widget="time"/>
+                	<field name="vitesse"/>
+                	<field name="vitesse_max"/>
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicle_id" context="{'group_by' : 'vehicle_id'}" string="Vehicule"/>
+                        <filter name="group_by_date_liv" context="{'group_by' : 'date_liv'}" string="date du releve"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+
+        <record id="trajet_form_view" model="ir.ui.view">
+            <field name="name">wso.feu.trajet</field>
+            <field name="model">wso.feu.trajet</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Verification des trajets" version="8.0" create="false" edit ="false">
+                <sheet>
+                		<group>
+			                <group >
+			                    <field name="date_liv"/>
+			                 </group>
+			                <group >
+								<field name="vehicle_id"/>
+							</group>
+						</group>
+		    <newline/>
+	         <notebook>
+	               <page string="Coordonnees de départ">
+	                	<group colspan="3"  string="Localisation">
+                			<field name="longitude"/>
+                			<field name="latitude"/>
+                			<field name="lieu"/>
+                		</group>
+                	</page>
+
+				  	<page string="Vitesse">
+			         <group colspan="4">
+						<field name="vitesse"/>
+                		<field name="vitesse_max"/>
+	                 </group>
+					</page>
+
+						<page string="Autres">
+					         <group colspan="4">
+					        	<field name="dist_parc"/>
+								<field name="temps_parcours" widget="time"/>
+		                		<field name="remarque"/>
+	                		</group>
+						</page>
+	           		</notebook>
+	          	</sheet>
+	           	</form>
+	         </field>
+	      </record>
+
+
+		<record id="trajet_action" model="ir.actions.act_window">
+            <field name="name">Suivis des parcours de livraisons</field>
+            <field name="res_model">wso.feu.trajet</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+<!--            	"search_default_group_by_date_liv" : True-->
+            <field name="view_id" ref="trajet_search"/>
+            <field name="context">{"search_default_group_by_vehicle_id" : True}</field>
+
+
+    </record>
+
+
+	<menuitem
+        name="Trajets"
+        parent="fleet_logistique"
+        action="trajet_action"
+        id="menu_trajet_action"
+        sequence ="3"
+         />
+
+
+	<record model='ir.ui.view' id='fleet_vehicle_odometer_tagip_form'>
+            <field name="name">fleet.vehicle.odometer.tagip.form</field>
+            <field name="model">fleet.vehicle.odometer.tagip</field>
+            <field name="arch" type="xml">
+                <form string="Odometer  Tagip Logs">
+                    <sheet>
+                        <group>
+                            <field name="vehicle_id" />
+                                <div>
+                                    <field name="value" class="oe_inline"/>
+                                </div>
+                            <field name="date" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model='ir.ui.view' id='fleet_vehicle_odometer_tagip_tree'>
+            <field name="name">fleet.vehicle.odometer.tagip.tree</field>
+            <field name="model">fleet.vehicle.odometer.tagip</field>
+            <field name="arch" type="xml">
+                <tree string="Odometer Logs" editable="top">
+                    <field name="date" />
+                    <field name="vehicle_id" on_change="on_change_vehicle(vehicle_id)"/>
+                    <field name="value" />
+                    <field name="distance_parcourue" />
+                </tree>
+            </field>
+        </record>
+
+        <record model='ir.ui.view' id='fleet_vehicle_odometer_tagip_search'>
+            <field name="name">fleet.vehicle.odometer.tagip.search</field>
+            <field name="model">fleet.vehicle.odometer.tagip</field>
+            <field name="arch" type="xml">
+                <search string="Vehicles odometers" >
+                    <field name="vehicle_id" />
+                    <field name="value"/>
+                    <field name="date"/>
+                    <group expand="0" string="Group By">
+                        <filter name="groupby_vehicle" context="{'group_by' : 'vehicle_id'}" string="Vehicle"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="fleet_vehicle_odometer_tagip_graph">
+           <field name="name">fleet.vehicle.odometer.tagip.graph</field>
+           <field name="model">fleet.vehicle.odometer.tagip</field>
+           <field name="arch" type="xml">
+                <graph string="Odometer Values Per Vehicle">
+                    <field name="vehicle_id" type="row"/>
+                    <field name="value" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <record model='ir.actions.act_window' id='fleet_vehicle_odometer_tagip_act'>
+            <field name="name">Releve kilometrique</field>
+            <field name="res_model">fleet.vehicle.odometer.tagip</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,graph</field>
+            <field name="context">{"search_default_groupby_vehicle" : True}</field>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Cliquer pour creer un nouveau releve.
+              </p>
+              <p>
+                Ces releve kilometrique sont obtenus automatiquement a partir des mails envoyes par tagip.
+              </p>
+            </field>
+        </record>
+
+
+        <record id="fleet.fleet_vehicle_odometer_menu" model='ir.ui.menu'>
+			<field name="action"></field>
+		</record>
+
+
+        <menuitem action="fleet.fleet_vehicle_odometer_act" parent="fleet.fleet_vehicle_odometer_menu" id="fleet_vehicle_odometer_menu_not_tagip" groups="fleet.group_fleet_user"/>
+		<menuitem action="fleet_vehicle_odometer_tagip_act" parent="fleet.fleet_vehicle_odometer_menu" id="fleet_vehicle_odometer_menu_tagip" groups="fleet.group_fleet_user"/>
+
+
+    </data>
+
+</openerp>

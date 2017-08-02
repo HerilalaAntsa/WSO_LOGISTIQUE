@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+
+    	<record id="wso_fleet_control_tree_view" model="ir.ui.view">
+            <field name="name">wso_fleet_control.tree</field>
+            <field name="model">wso.fleet.control</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Fiche de saisie de constatation des degats apres un deplacement"  >
+                	<field name="vec_id"/>
+					<field name="date_cont"/>
+					<field name="etat_caross" string="Carosserie" />
+					<field name="etat_equip" string="equipement" />
+					<field name="etat_moteur" string="Moteur" />
+					<field name="etat_pneu" string="Pneu" />
+					<field name="etat_frein" string="Frein" />
+                </tree>
+            </field>
+        </record>
+        <record model='ir.ui.view' id='wso_fleet_control_search'>
+            <field name="name">wso_fleet_control.search</field>
+            <field name="model">wso.fleet.control</field>
+            <field name="arch" type="xml">
+                <search string="Vehicule" >
+					<field name="vec_id"/>
+					<field name="date_cont"/>
+					<field name="etat_caross" string="Carosserie" />
+					<field name="etat_equip" string="equipement" />
+					<field name="etat_moteur" string="Moteur" />
+					<field name="etat_pneu" string="Pneu" />
+					<field name="etat_frein" string="Frein" />
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicule" context="{'group_by' : 'vec_id'}" string="Vehicule"/>
+                        <filter name="group_by_date_cont" context="{'group_by' : 'date_cont'}" string="Date de releve"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+        <record id="wso_fleet_control_form_view" model="ir.ui.view">
+            <field name="name">wso_fleet_control_form</field>
+            <field name="model">wso.fleet.control</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+               <form string="Details des constatations " version="8.0"  >
+					<sheet>
+	            <group colspan="2" >
+					<group string="A propos du vehicule">
+					<field name="vec_id"/>
+		            <field name="chauffeur"/>
+		            <field name="agent"/>
+					<field name="date_cont"/>
+					<field name="level_fuel" />
+					<field name="distance_km" />
+					<field name="photo" widget = "image"/>
+					</group>
+
+					<group string= "Carosserie">
+						<field name="etat_caross"/>
+		            	<field name="note_caross"/>
+					</group>
+				</group>
+				<group colspan="3" >
+					<group string= "Systeme de freinage">
+						<field name="etat_frein"/>
+		            	<field name="note_frein"/>
+					</group>
+					<group string= "Equipement electrique">
+						<field name="etat_equip"/>
+		            	<field name="note_equip"/>
+					</group>
+				</group>
+             	<group colspan="3" >
+					<group string="Moteur">
+						<field name="etat_moteur"/>
+		            	<field name="note_moteur"/>
+					</group>
+
+					<group string= "Pneumatique">
+						<field name="etat_pneu"/>
+		            	<field name="note_pneu"/>
+					</group>
+
+             	</group>
+
+
+	   		</sheet>
+	</form>
+	</field>
+</record>
+
+
+		<record id="wso_fleet_control_action" model="ir.actions.act_window">
+            <field name="name">Fiche control des vehicules</field>
+            <field name="res_model">wso.fleet.control</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wso_fleet_control_search"/>
+            <field name="context">{"search_default_group_by_vehicule" : True ,"search_default_group_by_date_cont" : True ,}</field>
+       </record>
+
+        <record model='ir.ui.view' id='fleet_vehicle_parc_form2'>
+            <field name="name">fleet.vehicle.form</field>
+            <field name="model">fleet.vehicle</field>
+            <!-- <field name="inherit_id" ref="wso_fleet.fleet_vehicle_form2"/> -->
+            <field name="inherit_id" ref="wso_parc_auto.fleet_vehicle_parc_form"/>
+            <field name="arch" type="xml">
+       		 <xpath  expr="//page['Media']" position="after" >
+        		<page string="Fiche controle">
+						    	<field name="fiche_ids" nolabel="1" widget="many2many" >
+							    	<tree string="Etat des vehicules">
+										<field name="vec_id"/>
+										<field name="date_cont"/>
+										<field name="etat_caross" string="Carosserie" />
+										<field name="etat_equip" string="equipement" />
+										<field name="etat_moteur" string="Moteur" />
+										<field name="etat_pneu" string="Pneu" />
+										<field name="etat_frein" string="Frein" />
+									</tree>
+								</field>
+							</page>
+			</xpath>
+		</field>
+	</record>
+
+
+   <menuitem name="Control" parent="fleet.menu_root" id="fleet_control" />
+    <menuitem
+            name="Fiche controle apres les déplacements"
+            action="wso_fleet_control_action"
+            id="menu_wso_fleet_control_action"
+            parent="fleet_control"
+            />
+
+    </data>
+</openerp>

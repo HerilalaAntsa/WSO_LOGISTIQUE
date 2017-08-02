@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+ 	   <record id="view_feuille_de_route_form" model="ir.ui.view">
+            <field name="name">wso.flotte.route.view.form</field>
+            <field name="model">wso.flotte.route</field>
+            <field name="arch" type="xml">
+                 <form string="Feuille de route Line" >
+                 	<header>
+                 		<button name="create_frais_mission" string="Frais de dépense" type="object"/>
+                 		<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,open,done,cancel"/>
+                 	</header>
+                    <sheet>
+                        <group>
+                            <group>
+                               		<field name="vehicle_id"  required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="destination_id"  required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="conducteur_id" required="1"/>
+                            </group>
+                            <group>
+                            		<field name="date_saisie" string="Date de saisie" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                                    <field name="date_depart_prevue" string="Date de départ prévue" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                                    <field name="date_retour_prevue" string="Date de retour prévue" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                            </group>
+                            <group>
+                                    <field name="date_depart" string="Date de départ" attrs="{'required':[('state','=','open')], 'invisible':[('state','=','cancel')], 'readonly':[('state', '=', ['done'])]}"/>
+                                    <field name="date_retour" string="Date de retour" attrs="{'required':[('state','=','done')], 'invisible':[('state','=','cancel')], 'readonly':[('state', '=', ['done'])]}"/>
+                                    <field name="type_mission" string="Mission" required="1" attrs="{'readonly':[('state', '=', 'done')]}"/>
+                                    <field name="passager"
+                                   		string="Nombre de passager(s)" required="1"
+                                   		attrs="{'readonly':[('state', '=', 'done')]}"/>
+                           </group>
+                           <group>
+
+                           </group>
+                        </group>
+                        <h2>Ordre de mission</h2>
+                        <group>
+                            <field name="commande_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="lieu"/>
+                                    <field name="client_id" string="client"/>
+                                    <field name="quantite"/>
+                                    <field name="date_arrivee"/>
+                                    <field name="date_depart"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <h2>Suivi de livraison</h2>
+                        <group>
+	                        <notebook>
+	                            <page string="Arrets">
+	                                <group>
+	                                    <field name="arret_ids" nolabel="1">
+	                                        <tree editable="bottom">
+	                                            <field name="date_arret" string="date et heure"/>
+	                                            <field name="latitude_arret"/>
+	                                            <field name="longitude_arret"/>
+	                                            <field name="lieu_id"/>
+	                                        </tree>
+	                                    </field>
+
+	                                </group>
+	<!--                                 <div class="oe_right"><group><field name="sum_cost" string="Indicative Costs Total"/></group></div> -->
+	                            </page>
+	                            	<page string="Trajets">
+	                                <group>
+	                                    <field name="trajet_ids" nolabel="1">
+	                                        <tree editable="bottom">
+	                                            <field name="date_trajet" string="date et heure"/>
+	                                            <field name="latitude_trajet"/>
+	                                            <field name="longitude_trajet"/>
+	                                            <field name="lieu_id"/>
+	                                        </tree>
+	                                    </field>
+
+	                                </group>
+	<!--                                 <div class="oe_right"><group><field name="sum_cost" string="Indicative Costs Total"/></group></div> -->
+	                            </page>
+	<!--                             <page string="Generated Recurring Costs">
+	                                <group>
+	                                    <field name="generated_cost_ids" context="{'vehicle_id': vehicle_id}" nolabel="1" sum="amount">
+	                                        <tree editable="bottom" >
+	                                            <field name="date" />
+	                                            <field name="amount" sum="amount"/>
+	                                        </tree>
+
+	                                    </field>
+	                                </group>
+	                            </page> -->
+	                        </notebook>
+	                    </group>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+         <record id="view_feuille_de_route_tree" model="ir.ui.view">
+            <field name="name">wso.flotte.route.view.tree</field>
+            <field name="model">wso.flotte.route</field>
+            <field name="arch" type="xml">
+                <tree string="Feuille de Route">
+                   <field name="vehicle_id"/>
+                   <field name="marque_vehicle" />
+                   <field name="conducteur_id" />
+                   <field name="date_depart_prevue" />
+                   <field name="date_retour_prevue" />
+                   <field name="type_mission" />
+                </tree>
+            </field>
+        </record>
+
+	    <record id="view_feuille_de_route_action" model="ir.actions.act_window">
+			<field name="name">Feuille de route</field>
+			<field name="res_model">wso.flotte.route</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_feuille_de_route_tree"/>
+		</record>
+
+		<menuitem name="Logistique 2.0" parent="fleet.menu_root" id="wso_flotte_fleet_logistique" />
+        <menuitem
+			 name="Feuille de route" action="view_feuille_de_route_action"
+			 id="feuille_de_route_view_menu"
+			 parent="wso_flotte_fleet_logistique"
+			 sequence="1"
+			/>
+</odoo>

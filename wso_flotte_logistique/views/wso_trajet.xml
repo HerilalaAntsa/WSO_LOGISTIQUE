@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    	<record id="view_wso_flotte_trajet_tree" model="ir.ui.view">
+            <field name="name">wso.flotte.trajet.tree</field>
+            <field name="model">wso.flotte.trajet</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Ordonnancement de livraison" create="false">
+                	<field name="vehicle_id"/>
+                	<field name="date_trajet"/>
+                	<field name="lieu_id" />
+                	<field name="latitude_trajet"/>
+                	<field name="longitude_trajet"/>
+                </tree>
+            </field>
+        </record>
+
+		   <record model='ir.ui.view' id='view_wso_flotte_trajet_search'>
+            <field name="name">wso.flotte.trajet.search</field>
+            <field name="model">wso.flotte.trajet</field>
+            <field name="arch" type="xml">
+                <search string="Vehicle" >
+                  	<field name="vehicle_id"/>
+                	<!-- <field name="date_trajet"/> -->
+                	<field name="lieu_id" />
+                	<field name="latitude_trajet"/>
+                	<field name="longitude_trajet"/>
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicle_id" context="{'group_by' : 'vehicle_id'}" string="Vehicule"/>
+                        <filter name="group_by_month_date" context="{'group_by' : 'date_trajet:month'}" string="Mois"/>
+                        <filter name="group_by_date_date" context="{'group_by' : 'date_trajet:day'}" string="Date trajet"/>
+                        <!-- <filter name="group_by_type" context="{'group_by' : 'type'}" string="Type"/> -->
+                    </group>
+                </search>
+            </field>
+        </record>
+
+
+
+        <record id="view_wso_flotte_trajet_form" model="ir.ui.view">
+            <field name="name">wso.flotte.trajet.form</field>
+            <field name="model">wso.flotte.trajet</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Ordonnancement de livraison" version="8.0" create="false" edit ="false">
+
+                <sheet>
+                	<group>
+		            	<group class="oe_left" >
+		                  	<field name="date_trajet"/>
+		             	</group>
+		              	<group class="oe_right">
+							<field name="vehicle_id"/>
+		              	</group>
+		           </group>
+
+		    <newline/>
+
+	         <notebook>
+	         	  <page string="Coordonnees">
+	         	  	<group>
+			           <field name="latitude_trajet"/>
+			           <field name="longitude_trajet"/>
+			           <field name="lieu_id"/>
+					</group>
+	         	  </page>
+                	<page string="Trajet" >
+			           	  <group>
+			           	  	<group string="Vitesse">
+
+	                			<field name="vitesse_max"/>
+	                			<field name ="vitesse_moyenne"/>
+                			</group>
+                			<group string="Detail trajet">
+                				<field name="distance_parcourue"/>
+                				<field name="duree" widget="time"/>
+                			</group>
+
+                		  </group>
+                	</page>
+           		</notebook>
+          	</sheet>
+           	</form>
+         </field>
+      </record>
+
+	<record id="view_wso_flotte_trajet_action" model="ir.actions.act_window">
+           <field name="name">Suivi des trajets</field>
+           <field name="res_model">wso.flotte.trajet</field>
+           <field name="view_type">form</field>
+           <field name="domain">[] </field>
+           <field name="view_mode">tree,form</field>
+           <field name="view_id" ref="view_wso_flotte_trajet_tree"/>
+           <field name="view_id" ref="view_wso_flotte_trajet_search"/>
+           <field name="context">{"search_default_group_by_vehicle_id" : True ,"search_default_group_by_month_releve" : True  ,"search_default_group_by_date_releve" : True }</field>
+   </record>
+   <menuitem
+        name="Mouvements et details"
+        parent="wso_flotte_fleet_logistique"
+		action="view_wso_flotte_trajet_action"
+        id="menu_feuille_trajet_action"
+        sequence ="4"
+         />
+</openerp>

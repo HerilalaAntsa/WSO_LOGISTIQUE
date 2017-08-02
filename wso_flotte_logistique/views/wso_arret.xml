@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    	<record id="view_wso_flotte_arret_tree" model="ir.ui.view">
+            <field name="name">wso.flotte.arret.tree</field>
+            <field name="model">wso.flotte.arret</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Arret de livraison" create="false">
+                	<field name="vehicle_id"/>
+					<field name="date_arret"/>
+                	<field name="latitude_arret"/>
+                	<field name="longitude_arret"/>
+                	<field name="lieu_id"/>
+                	<field name="temps_arret" widget="time"/>
+					<field name="dist_avant"/>
+                </tree>
+            </field>
+        </record>
+
+		<record model='ir.ui.view' id='view_wso_flotte_arret_search'>
+            <field name="name">wso.flotte.arret.search</field>
+            <field name="model">wso.flotte.arret</field>
+            <field name="arch" type="xml">
+                <search string="Vehicule" >
+                  <field name="vehicle_id"/>
+                	<field name="date_arret"/>
+                	<field name="temps_arret" widget="time"/>
+
+                	<field name="longitude_arret"/>
+                	<field name="latitude_arret"/>
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicle_id" context="{'group_by' : 'vehicle_id'}" string="Vehicule"/>
+<!--                        <filter name="group_by_date_val" context="{'group_by' : 'date'}" string="mois du deplacement"/-->
+                        <filter name="group_by_date_arret" context="{'group_by' : 'date_arret'}" string="date du deplacement"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+		 <record model="ir.ui.view" id="view_wso_flotte_arret_graph">
+           <field name="name">wso.flotte.arret.graph</field>
+           <field name="model">wso.flotte.arret</field>
+           <field name="arch" type="xml">
+                <graph string="Arret par date" stacked="True">
+                    <field name="vehicle_id" type="row"/>
+                    <field name="date_arret" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+
+
+        <record id="view_wso_flotte_arret_form" model="ir.ui.view">
+            <field name="name">wso.flotte.arret.form</field>
+            <field name="model">wso.flotte.arret</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Verfication des arrets" version="8.0" create="false" edit ="false">
+
+                <sheet>
+                	<group>
+		                <group>
+		                 	<field name="date_arret"/>
+		                 </group>
+		                <group>
+							<field name="vehicle_id"/>
+						</group>
+		            </group>
+
+		    <newline/>
+
+		         <notebook>
+		               <page string="Details">
+		                	<group colspan="3" >
+	                			<field name="longitude_arret" widget="float"/>
+	                			<field name="latitude_arret" widget="float"/>
+	                			<field name="lieu_id"/>
+	                			<field name="numero"/>
+	                		</group>
+	                	</page>
+
+					  	<page string="Autres">
+				         <group colspan="4">
+							<field name="temps_arret"  widget="time" />
+							<field name="dist_avant"/>
+	                		<field name="remarque"/>
+		                 </group>
+						</page>
+		         </notebook>
+	          	</sheet>
+	           	</form>
+	         </field>
+	      </record>
+
+
+		<record id="view_wso_flotte_arret_action" model="ir.actions.act_window">
+            <field name="name">Suivis des arrets</field>
+            <field name="res_model">wso.flotte.arret</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,graph,form</field>
+            <field name="view_id" ref="view_wso_flotte_arret_search"/>
+            <field name="context">{"search_default_group_by_vehicle_id" :True  ,"search_default_group_by_date_arret" :True ,} </field>
+       </record>
+
+  <menuitem
+            name="Arrets"
+            action="view_wso_flotte_arret_action"
+            id="wso_menu_arret_action"
+            parent="wso_flotte_fleet_logistique"
+			sequence ="3"
+           />
+</odoo>

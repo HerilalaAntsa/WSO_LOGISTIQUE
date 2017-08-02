@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+     	<record id="view_frais_mission_tree" model="ir.ui.view">
+            <field name="name">wso.flotte.frais.mission.view.tree</field>
+            <field name="model">wso.flotte.frais.mission</field>
+            <field name="arch" type="xml">
+                <tree string="Frais de mission" create="false">
+	                	<field name="feuille_de_route_id"/>
+	                	<field name="bon_de_paiement"/>
+						<field name="date_saisie"/>
+	                	<field name="ration"/>
+	                	<field name="frais"/>
+	                	<field name="hebergement"/>
+						<field name="complement_carburant"/>
+	                	<field name="indemnite_hs"/>
+						<field name="autre"/>
+					<!-- <div class="oe_right"><group><field name="sum_cost" string="Indicative Costs Total"/></group></div> -->
+                </tree>
+            </field>
+        </record>
+
+<!-- 		<record model='ir.ui.view' id='view_frais_mission_search'>
+            <field name="name">wso.flotte.frais.mission.view.search</field>
+            <field name="model">wso.flotte.frais.mission</field>
+            <field name="arch" type="xml">
+                <search string="Frais de mission" >
+                  <field name="vehicle_id"/>
+                	<field name="date_arret"/>
+                	<field name="temps_arret" widget="time"/>
+
+                	<field name="longitude_arret"/>
+                	<field name="latitude_arret"/>
+
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicle_id" context="{'group_by' : 'vehicle_id'}" string="Vehicule"/>
+                       <filter name="group_by_date_val" context="{'group_by' : 'date'}" string="mois du deplacement"/
+                        <filter name="group_by_date_arret" context="{'group_by' : 'date_arret'}" string="date du deplacement"/>
+                    </group>
+                </search>
+            </field>
+        </record> -->
+
+        <record id="view_frais_mission_form" model="ir.ui.view">
+            <field name="name">wso.flotte.frais.mission.view.form</field>
+            <field name="model">wso.flotte.frais.mission</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Définir les frais de mission" version="10.0">
+				<h2><field name="feuille_de_route_id" readonly="1"/></h2>
+                <sheet>
+                	<group>
+		                <group>
+		                 	<field name="date_saisie"/>
+		                </group>
+		            </group>
+
+		    	<newline/>
+
+                	<group>
+		                <group>
+	                			<field name="ration" widget="float"/>
+	                			<field name="frais" widget="float"/>
+	                			<field name="hebergement" widget="float"/>
+	                			<field name="complement_carburant" widget="float"/>
+	                			<field name="indemnite_hs" widget="float"/>
+	                			<field name="autre" widget="float"/>
+		                 </group>
+		            </group>
+
+		        <newline/>
+
+                	<group>
+		                <group>
+		                 	<field name="note"/>
+		                </group>
+		            </group>
+
+	          	</sheet>
+	           	</form>
+	         </field>
+	      </record>
+
+
+		<record id="wso_flotte_frais_mission_action" model="ir.actions.act_window">
+            <field name="name">Frais de mission</field>
+            <field name="res_model">wso.flotte.frais.mission</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_frais_mission_tree"/>
+            <field name="context">{"search_default_group_by_feuille_de_route_id" :True  ,"search_default_group_by_date_saisie" :True ,} </field>
+       </record>
+</odoo>

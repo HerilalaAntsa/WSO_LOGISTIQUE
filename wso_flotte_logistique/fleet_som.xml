@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+     	 <!-- <record model='ir.ui.view' id='fleet_vehicle_odometer_tree2'>
+            <field name="name">fleet.vehicle.odometer.tree</field>
+            <field name="model">fleet.vehicle.odometer</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_tree"/>
+            <field name="arch" type="xml">
+
+            	<xpath expr="/tree/field[@name='vehicle_id']" position="replace" >
+
+
+            	</xpath>
+				<xpath expr="/tree/field[@name='value']" position="replace" >
+
+
+            	</xpath>
+
+
+
+ 		</field>
+        </record>
+ -->
+
+
+	</data>
+</openerp>

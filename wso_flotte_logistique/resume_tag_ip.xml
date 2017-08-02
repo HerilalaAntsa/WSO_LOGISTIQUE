@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+    	<record id="resume_tree_view" model="ir.ui.view">
+            <field name="name">wso.tag.resume</field>
+            <field name="model">wso.tag.resume</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="resume de livraison" create="false" >
+                	<field name="vehicle_id"/>
+					<field name="date_depart"/>
+					<field name="date_arrivee"/>
+					<field name="duree_parcours" widget="time" />
+					<field name="distance_parcourue"/>
+                	<field name="vitesse_moyenne"/>
+                	<field name="vitesse_maximale"/>
+                	<field name="duree_arret" widget="time" />
+                	<field name="nombre_arret"/>
+
+                </tree>
+            </field>
+        </record>
+        <record model='ir.ui.view' id='resume_search'>
+            <field name="name">wso.tag.resume.search</field>
+            <field name="model">wso.tag.resume</field>
+            <field name="arch" type="xml">
+                <search string="vehicule" >
+                    <field name="vehicle_id"/>
+
+					<field name="date_depart"/>
+					<field name="nombre_arret"/>
+
+                	<field name="vitesse_moyenne"/>
+                	<field name="vitesse_maximale"/>
+                	<field name="distance_parcourue"/>
+					<field name="date_arrivee"/>
+                    <group expand="0" string="Group By">
+                        <filter name="group_by_vehicle_id" context="{'group_by' : 'vehicle_id'}" string="Vehicule"/>
+                        <filter name="group_by_date_depart" context="{'group_by' : 'date_depart'}" string="Date de releve"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+		 <record model="ir.ui.view" id="resume_graph">
+           <field name="name">wso.tag.resume.graph</field>
+           <field name="model">wso.tag.resume</field>
+           <field name="arch" type="xml">
+                <graph string="Arret par date" stacked="True">
+                    <field name="vehicle_id" type="row"/>
+                    <field name="distance_parcourue" type="measure"/>
+                </graph>
+            </field>
+        </record>
+        <record id="resume_form_view" model="ir.ui.view">
+            <field name="name">wso.tag.resume</field>
+            <field name="model">wso.tag.resume</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Details du parcours" version="8.0" create="false" edit ="false" >
+
+		                <sheet>
+		                	 <group>
+					                <group>
+					                    <field name="vehicle_id"/>
+					                 </group>
+
+
+				                <div class="oe_right" >
+					                <group>
+										<field name="date_depart"/>
+										<field name="date_arrivee"/>
+									</group>
+				                </div>
+				           </group>
+
+				    	<newline/>
+
+			         <notebook>
+<!--
+			               <page string="Details du depart">
+			                	<group colspan="3" >
+									<field name="lieu_depart"/>
+		                			<field name="longitude_depart"/>
+		                			<field name="latitude_depart"/>
+		                		</group>
+		                	</page>
+-->
+						  	<page string="Vitesse">
+					         <group colspan="4">
+								<field name="vitesse_moyenne"/>
+		                		<field name="vitesse_maximale"/>
+			                 </group>
+							</page>
+
+							<page string=" Trajet">
+							     <group colspan="4">
+							         	<field name="nombre_arret"/>
+							        	<field name="distance_parcourue"/>
+										<field name="duree_parcours" widget="time"/>
+				                		<field name="duree_arret" widget="time"/>
+				                		<field name="remarque"/>
+			                	 </group>
+							</page>
+<!--
+							<page string=" Details de l arrivee">
+							         <group colspan="4">
+							         	<field name="lieu_arrivee"/>
+							        	<field name="latitude_arrivee"/>
+										<field name="longitude_arrivee"/>
+			                		</group>
+							</page>
+-->
+			           		</notebook>
+			          	</sheet>
+	           	</form>
+	         </field>
+	      </record>
+
+
+		<record id="resume_action" model="ir.actions.act_window">
+            <field name="name">Mouvement journalier</field>
+            <field name="res_model">wso.tag.resume</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="view_id" ref="resume_search"/>
+            <field name="context">{ "search_default_group_by_date_depart" : True,"search_default_group_by_vehicle_id" : True }</field>
+
+
+       </record>
+    <menuitem
+            name="Mouvement journalier"
+            action="resume_action"
+            parent="fleet_logistique"
+            id="menu_resume_action"
+            sequence ="1"
+            />
+    </data>
+</openerp>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    	<record id="wso_find_lieu_tree_view" model="ir.ui.view">
+			<field name="name">wso.find.lieu.tree</field>
+			<field name="model">wso.find.lieu</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Caracteristique">
+					<field name="lieu" />
+					<field name="latitude" />
+					<field name="longitude" />
+					<field name="ville_id" />
+					<field name="rue" />
+					<field name="region" />
+					<field name="pays" />
+					<field name="type" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="wso_find_lieu_form_view" model="ir.ui.view">
+			<field name="name">wso.find.lieu.form</field>
+			<field name="model">wso.find.lieu</field>
+			<field name="view_mode">form</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+			    <form string="Coordonnee geographique"  version="7.0">
+                <sheet>
+					<notebook>
+						<page string="Information">
+		        			<group>
+							    <field name="latitude" class="oe_inline"/>
+					        	<field name="longitude" class="oe_inline"/>
+				        	</group>
+				 	        <group>
+					        	<field name="lieu" class="oe_inline"/>
+								<field name="ville_id" />
+								<field name="region" />
+								<field name="pays" />
+								<field name="type" />
+						    </group>
+				        </page>
+						<page string="Carte">
+
+			        	</page>
+					</notebook>
+			    </sheet>
+				</form>
+			</field>
+		</record>
+
+
+		<record id="wso_find_lieu_action" model="ir.actions.act_window">
+            <field name="name">Mis en place des lieux</field>
+            <field name="res_model">wso.find.lieu</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wso_find_lieu_tree_view"/>
+       </record>
+
+	<menuitem name="Logistique 2.0" parent="" id="wso_flotte_fleet_logistique" sequence="5" />
+	<menuitem
+		name="Zone et geolocalisation"
+		parent="wso_flotte_fleet_logistique"
+		action="wso_find_lieu_action"
+		id="wso_menu_distrib_lieu_action"
+		sequence="5"/>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <record id="wso_view_model_garage_form2" model="ir.ui.view">
+            <field name="name">fleet.vehicle.model.form</field>
+            <field name="model">fleet.vehicle.model</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_model_view_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//field[@name='brand_id']"  position="after">
+					<label for="type_id" class="oe_edit_only"/>
+					<field name="type_id"/>
+	 			</xpath>
+            </field>
+        </record>
+
+        <!-- FILTRE PAR STATU VEHICULE -->
+        <record model="ir.ui.view" id="fleet_vehicle_search2">
+            <field name="name">fleet.vehicle.search</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_search"/>
+            <field name="arch" type="xml">
+            	<xpath  expr="//field[@name='name']" position="before" >
+            		<field name="state" string="Status" filter_domain="['|',('state','ilike',self),('state','ilike',self)]"/>
+            	</xpath>
+            </field>
+        </record>
+
+        <record model='ir.ui.view' id='fleet_vehicle_tree3'>
+            <field name="name">fleet.vehicle.tree</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_view_tree"/>
+            <field name="arch" type="xml">
+            	<xpath  expr="/tree/field[@name='state_id']" position="before" >
+            		<field name="state"/>
+            	</xpath>
+
+            	<xpath  expr="/tree/field[@name='state_id']" position="replace" >
+            		<field name="state_id" invisible="1"/>
+            	</xpath>
+
+            </field>
+        </record>
+</odoo>
