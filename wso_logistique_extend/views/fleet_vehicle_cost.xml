@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model='ir.ui.view' id='fleet_vehicle_costs_form_extend'>
+            <field name="name">fleet.vehicle.cost.form</field>
+            <field name="model">fleet.vehicle.cost</field>
+            <field name="inherit_id" ref="wso_logistique.fleet_vehicle_costs_form"/>
+            <field name="arch" type="xml">
+
+            	<xpath  expr="//field[@name='litre_quantity']" position="replace" >
+            		<field name='litre_quantity'
+            			   attrs="{'required':[('use_to_fuel','=',True)], 'invisible':[('use_to_fuel','=',False)]}"
+            			   context="{'appoint': appoint}"/>
+            	</xpath>
+
+            	<xpath  expr="//field[@name='appoint']" position="replace" >
+            		<field name='appoint'
+            			   attrs="{'invisible':[('use_to_fuel','=',False)]}"
+            			   context="{'litre_quantity': litre_quantity}"/>
+            	</xpath>
+
+            </field>
+        </record>
+	</data>
+</openerp>

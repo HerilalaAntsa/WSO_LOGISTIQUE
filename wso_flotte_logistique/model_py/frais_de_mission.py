@@ -17,7 +17,6 @@ class wso_frais_de_mission (models.Model):
     _name = "wso.flotte.frais.mission"
     _description = u"Toutes les dépenses utiles pendant le voyage, selon l'ordre de mission."
 
-    # Une feuille de route ne pourra avoir qu'un seul frais de mission (aucun doublon)
     feuille_de_route_id = fields.Many2one('wso.flotte.route', string='Feuille de route', required=True)
     date_saisie = fields.Date('Date de saisie', size=128)
     bon_de_paiement = fields.Char('N° BP', size=128)
@@ -29,9 +28,10 @@ class wso_frais_de_mission (models.Model):
     autre = fields.Float('Autres')
     note = fields.Text('Notes')
 
-    bareme_contrainte = fields.Boolean(store= False, default= False)
+    exces_bareme = fields.Boolean('Excede le barème', default= False)
     note_bareme = fields.Char(string='Remarque sur le montant de ration', size=128)
 
+    # Une feuille de route ne pourra avoir qu'un seul frais de mission (aucun doublon)
     _sql_constraints = {
                         ('feuille_de_route_unique', 'unique(feuille_de_route_id)', ' Une feuille de route ne doit avoir qu\'un seul frais de mission.')
                     }
@@ -43,12 +43,13 @@ class wso_frais_de_mission (models.Model):
         else:
             self.ration = self.feuille_de_route_id.destination_id.bareme_ration
 
-    @api.constrains('ration')
-    def check_bareme(self):
-        fdm = self.frais_de_mission_id
-        if fdm.ration > fdm.destination_id.bareme_ration:
-            self.bareme_contrainte = True
+    @api.onchange('ration')
+    def check_exces_bareme(self):
+        fdr = self.feuille_de_route_id
+        # La ration doit être inférieur au bareme_ration, cf wso.flotte.destination
+        if self.ration > fdr.destination_id.bareme_ration:
+            self.exces_bareme = True
         else:
-            self.bareme_contrainte = False
+            self.exces_bareme = False
 
 wso_frais_de_mission()

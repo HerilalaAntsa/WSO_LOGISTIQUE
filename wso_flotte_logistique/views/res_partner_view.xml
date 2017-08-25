@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+		<record id="wso_view_crm_partner_geo_form" model="ir.ui.view">
+            <field name="name">wso.res.partner.geolocation.inherit</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/group//button[@name='geo_localize']" position="replace">
+                           <button
+                           		id="btn_modify_partner"
+                                string="Assigner/Modifier une adresse"
+                           		name="%(web_google_maps.act_res_partner_map)d"
+                                colspan="2"
+                           		type="action"
+                                icon="fa-check"
+                        		context="{'editable': True, 'search_default_id': id, 'search_default_name': name}}"/>
+                </xpath>
+            </field>
+        </record>
+</odoo>

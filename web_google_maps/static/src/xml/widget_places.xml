@@ -68,8 +68,8 @@
                 <i class="fa fa-search" aria-hidden="true"></i>
             </div>
             <div class="btn_create_partner" title="Create a partner">
-                <i class="fa fa-plus" aria-hidden="true"></i>
-            </div>
+	            <i class="fa fa-plus" aria-hidden="true"></i>
+	        </div>
             <div class="pac-card" id="pac-card">
                 <div>
                     <div id="title" class="text-center">

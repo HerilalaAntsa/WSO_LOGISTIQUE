@@ -1,0 +1,27 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'Gestion des carburants de la compagnie vidzar',
+    'version': '1.0',
+    'category': 'Distribution',
+    'description': """Module comprenant le suivi de la flotte automobile : suivi carburant""",
+    'author': 'Dzama Consulting (ajoharym@gmail.com)',
+    'website': 'http://www.dzama.mg',
+    'license': 'AGPL-3',
+    'depends': ['wso_logistique'],
+    'init_xml': [],
+    'demo_xml': [],
+    'data': [
+          'security/ir.model.access.csv',
+          'security/flotte_security.xml',
+          'views/commande_carburant.xml',
+#           'views/seq_commande.xml',
+          'views/fleet_vehicle_log_fuel.xml',
+          'report/report_paperformat.xml',
+          'report/report.xml',
+          'report/report_fuel_order.xml',
+          'views/fleet_vehicle_odometer.xml',
+          'views/fleet_vehicle_cost.xml',
+        ],
+    'active': False,
+    'installable': True,
+}

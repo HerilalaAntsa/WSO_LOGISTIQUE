@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="view_import_data_fuel" model="ir.ui.view">
+            <field name="name">Import Fichier</field>
+            <field name="model">import.data.fuel</field>
+            <field name="arch" type="xml">
+                <form string="Importation carburant">
+                   	<group>
+                   		<field name="name" placeholder="e.g. English" required="1"/>
+                        <field name="data" filename="filename"/>
+                        <field name="filename" invisible="1"/>
+                   	</group>
+                    <footer>
+                        <button name="take_column" string="Récupérer colonnes" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_import_data_fuel" model="ir.actions.act_window">
+            <field name="name">Importation de carburant</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">import.data.fuel</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+
+
+
+
+        <record id="view_import_fuel" model="ir.ui.view">
+            <field name="name">Import carburant</field>
+            <field name="model">import.fuel</field>
+            <field name="arch" type="xml">
+                <form string="Importation carburant">
+                    <sheet>
+                    	<h1>
+                    		<field name="name" readonly="1"/>
+                    	</h1>
+                    	<div>
+                       		<group string="Filtres">
+                       			<group>
+                       				<field name="use_model" string="Utiliser colonnes existantes?"/>
+
+                       				<field name="model_import_id"
+			                        	string="Modèle d'importation"
+			                        	attrs="{'required': [('use_model','=',True)], 'invisible': [('use_model','=',False)]}"
+			                        	options="{'no_create': True}"
+			                        	domain="[('use_model','=', False), ('save_data','=', 'to_save')]"
+			                        	/>
+                       			</group>
+                       		</group>
+                       	</div>
+                    	<group string="Configurations">
+                 			<group>
+                       			<field name="fuel_date" required="1" />
+                       			<field name="fuel_hour" required="1" />
+                       			<field name="fuel_vehicle_id" string="Véhicule" required="1" />
+                       			<field name="fuel_beneficiaire" string="Bénéficiaire" required="1" />
+                       			<field name="fuel_partner_id" string="Société / Service" required="1" />
+                       			<field name="fuel_panne" string="Etat tableau" required="1" />
+                       			<field name="fuel_kilometrage" string="Kilométrage" required="1" />
+                       			<field name="fuel_tagip" required="1" />
+
+                       		</group>
+                       		<group>
+                       			<field name="fuel_libelle" string="Libellé" required="1" />
+                       			<field name="fuel_order_number" string="Réf BC" required="1" />
+                       			<field name="fuel_invoice_number" string="Réf Facture" required="1" />
+                       			<field name="fuel_price_unit" required="1" />
+                       			<field name="fuel_qty" string="Quantité" required="1" />
+                       			<field name="fuel_amount" required="1" />
+                       			<field name="fuel_complement" string="Complément carburant" required="1" />
+                       		</group>
+
+                       	</group>
+
+                       	<div>
+                       		<group>
+                       			<group>
+                       				<field name="save_data"
+			                        	string="Souhaitez vous enregistrer la configuration?"
+			                        	attrs="{'invisible': [('use_model','=',True)]}"
+			                        	class="oe_inline"
+			                        	/>
+                       			</group>
+                       		</group>
+                       	</div>
+
+                    </sheet>
+                    <footer>
+                        <button name="wso_import_data" string="Importer" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-default" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_view_import_fuel" model="ir.actions.act_window">
+            <field name="name">Importation de carburant</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">import.fuel</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+
+        <menuitem id="menu_view_import_data_fuel" name="Importation de données" parent="fleet.menu_root" groups="wso_fuel_gestion.group_wso_fuel_access" sequence="3"/>
+
+        <menuitem
+        	action="action_view_import_data_fuel"
+        	id="menu_view_import_fuel"
+        	parent="wso_fuel_gestion.menu_view_import_data_fuel" sequence="1"
+        />
+</odoo>

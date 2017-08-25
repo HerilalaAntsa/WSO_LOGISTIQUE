@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="fuel_vehicle_gestion_action" model="ir.actions.act_window">
+            <field name="name">Gestion de carburant (feuille de route)</field>
+            <field name="res_model">fleet.vehicle.fuel.gestion</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wso_fuel_gestion.fuel_vehicle_gestion_form"/>
+            <field name="context">{'default_feuille_de_route_id': context.get('feuille_de_route_id', False),} </field>
+            <field name="target">new</field>
+       </record>
+
+   		<record id="fuel_vehicle_gestion_action_tree" model="ir.actions.act_window">
+            <field name="name">Gestion de carburant (feuille de route)</field>
+            <field name="res_model">fleet.vehicle.fuel.gestion</field>
+            <field name="view_type">form</field>
+            <field name="domain">[] </field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wso_fuel_gestion.fuel_vehicle_gestion_tree"/>
+            <field name="context">{'default_feuille_de_route_id': context.get('feuille_de_route_id', False),} </field>
+            <field name="target">new</field>
+       </record>
+
+	</data>
+</openerp>

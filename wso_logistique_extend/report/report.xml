@@ -1,0 +1,29 @@
+<openerp>
+  <data>
+
+    <!-- <report
+      id="credit_control_summary"
+      model="credit.control.communication"
+      string="Credit Control Summary"
+      report_type="qweb-pdf"
+      name="account_credit_control.report_credit_control_summary"
+      file="account_credit_control.report_credit_control_summary"
+      auto="False"
+      />-->
+
+   <report
+      id="fuel_order"
+      model="fuel.order"
+      string="Bon de commande"
+      report_type="qweb-pdf"
+      name="wso_logistique_extend.report_fuel_order"
+      file="wso_logistique_extend.report_fuel_order"
+      auto="False"
+      />
+
+		<record id="fuel_order" model="ir.actions.report.xml">
+            <field name="paperformat_id" ref="wso_logistique_extend.paperformat_fuel_report"/>
+        </record>
+
+  </data>
+</openerp>

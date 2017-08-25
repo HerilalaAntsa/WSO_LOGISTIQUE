@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="wso_etat_consommation_fuel_tree" model="ir.ui.view">
+            <field name="name">etat.consommation.carburant.tree</field>
+            <field name="model">etat.consommation.carburant</field>
+            <field name="arch" type="xml">
+                <tree string="Suivi consommation carburant">
+                    <field name="name" />
+                    <field name="from_date"/>
+                    <field name="to_date"/>
+                </tree>
+            </field>
+        </record>
+
+
+		<record id="wso_etat_consommation_fuel_form" model="ir.ui.view">
+			<field name="name">etat.consommation.carburant.form</field>
+			<field name="model">etat.consommation.carburant</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Suivi consommation carburant" version="7.0">
+                    <div>
+                    	<group>
+                    		<field name="name" string="Description" class="oe_inline" required="1"/>
+                    		<field name="from_date" string="Du" required="1" />
+                    		<field name="to_date" string="Au" required="1"/>
+                    	</group>
+                    </div>
+                    <notebook>
+                    	<page string="Contrôle carburant">
+
+                    		<group >
+		                    	<button string="Rechercher" name="get_fuel"  type="object" />
+				            </group>
+				            <group>
+				            	<div>
+				            		<!-- <field name="fuel_ids" nolabel="1" readonly="1">
+				            			<tree string="Carburants" create="false" edit="false"  >
+								        	<field name="vehicle_id"/>
+								        	<field name="marque_vehicle"/>
+								        	<field name="conducteur_id"/>
+								        	<field name="last_kilom" string="Départ"/>
+								        	<field name="odometer" string="Arrivée"/>
+								        	<field name="liter"/>
+								        	<field name="appoint"/>
+								        	<field name="distance" string="Km effectués"/>
+								        	<field name="qty_totale"/>
+								        	<field name="consommation" string="Consommation au 100Km"/>
+								        	<field name="vehicle_consommation"/>
+								        </tree>
+				            		</field> -->
+
+				            		<field name="suivi_ids" nolabel="1" readonly="1">
+				            			<tree string="Carburants" create="false" edit="false"  >
+								        	<field name="vehicle_id" string="Véhicule"/>
+								        	<field name="name" string="Marque / Type"/>
+								        	<field name="conducteur_id" string="Chauffeur"/>
+								        	<field name="kilometrage" string="Km effectués"/>
+								        	<field name="qty_fuel" string="Quantité totale prise"/>
+								        	<field name="consommation" string="Consommation au 100Km"/>
+								        	<field name="montant" string="Montant Total"/>
+								        </tree>
+				            		</field>
+
+				            	</div>
+				            </group>
+
+                    	</page>
+                    </notebook>
+
+                </form>
+			</field>
+		</record>
+
+		<record id="wso_etat_consommation_fuel_action_form" model="ir.actions.act_window">
+			<field name="name">Suivi des vehicules au garage</field>
+            <field name="res_model">etat.consommation.carburant</field>
+            <field name="view_type">form</field>
+            <field name="domain">[]</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="wso_etat_consommation_fuel_tree"/>
+		</record>
+
+        <menuitem id="menu_etat_consommation_carburant"
+              parent="wso_logistique_extend.fleet_board_analyse"
+              action="wso_etat_consommation_fuel_action_form"
+              sequence="2"
+              name="Suivi et contrôle consommation"
+              groups="fleet.group_fleet_manager"/>
+
+	</data>
+</openerp>

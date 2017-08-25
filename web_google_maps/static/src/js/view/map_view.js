@@ -10,33 +10,6 @@ odoo.define('web.MapView', function (require) {
     var _lt = core._lt;
     var _t = core._t;
 
-    var GOOGLE_PLACES_COMPONENT_FORM = {
-            'street_number': 'long_name',
-            'route': 'long_name',
-            'intersection': 'short_name',
-            'political': 'short_name',
-            'country': 'short_name',
-            'administrative_area_level_1': 'long_name',
-            'administrative_area_level_2': 'short_name',
-            'administrative_area_level_3': 'short_name',
-            'administrative_area_level_4': 'short_name',
-            'administrative_area_level_5': 'short_name',
-            'colloquial_area': 'short_name',
-            'locality': 'short_name',
-            'ward': 'short_name',
-            'sublocality_level_1': 'short_name',
-            'sublocality_level_2': 'short_name',
-            'sublocality_level_3': 'short_name',
-            'sublocality_level_5': 'short_name',
-            'neighborhood': 'short_name',
-            'premise': 'short_name',
-            'postal_code': 'short_name',
-            'natural_feature': 'short_name',
-            'airport': 'short_name',
-            'park': 'short_name',
-            'point_of_interest': 'long_name'
-        };
-
     var MapView = View.extend({
         template: 'MapView',
         className: 'o_map_view',
@@ -50,46 +23,6 @@ odoo.define('web.MapView', function (require) {
             this.shown = $.Deferred();
             this.fields = this.fields_view.fields;
             this.children_field = this.fields_view.field_parent;
-            this.creatable = false;
-
-            /* The three keys('model', 'method', 'fields') in the object assigned to variable 'options' is a mandatory keys.
-             * The idea is to be able to pass any 'object' that can be created within the map
-             *
-             * The fields options is divided into three parts:
-             * 1) 'general'
-             *     This configuration is for 'general' fields of the object, fields like name, phone, etc..
-             *     On the right side of each field is an attribute(s) from 'Places autocomplete'
-             * 2) 'geolocation'
-             *     This configuration is for geolocation fields (only 'latitude' and 'longitude')
-             * 3) 'address'
-             *     This configuration is similar to configuration used by 'google_places' widget
-             *
-             */
-            var options = {
-                'model': 'res.partner',
-                'method': 'create_partner_from_map',
-                'fields': {
-                    'general': {
-                        'name': 'name',
-                        'website': 'website',
-                        'phone': ['international_phone_number', 'formatted_phone_number'],
-                        'is_company': '',
-                    },
-                    'geolocation': {
-                        'latitude': 'partner_latitude',
-                        'longitude': 'partner_longitude'
-                    },
-                    'address': {
-                        'street': ['street_number', 'route', 'vicinity'],
-                        'street2': ['administrative_area_level_3', 'administrative_area_level_4', 'administrative_area_level_5'],
-                        'city': ['locality', 'administrative_area_level_2'],
-                        'zip': 'postal_code',
-                        'state_id': 'administrative_area_level_1',
-                        'country_id': 'country',
-                    }
-                }
-            };
-            this.options = options;
         },
         start: function () {
             var self = this;
@@ -97,17 +30,9 @@ odoo.define('web.MapView', function (require) {
             return this._super.apply(this, arguments);
         },
         _init_start: function () {
-    	    try {
-    	    	this.init_map();
-                this.on_load_markers();
-                this.on_point_to_create_partner();
-                return $.when();
-    	    } catch (e) {
-	    	    if (e instanceof ReferenceError) {
-	    	      // When google map cannot be loaded due to internet connection failure
-	    			window.alert(_t('The map could not be load. Please check your internet connection.'));
-    			}
-    	    }
+            this.init_map();
+            this.on_load_markers();
+            return $.when();
         },
         willStart: function () {
             this.set_geolocation_fields();
@@ -147,9 +72,7 @@ odoo.define('web.MapView', function (require) {
             }));
         },
         _create_marker: function (lat_lng, record) {
-            var record = record || {
-                'name': 'XY'
-            };
+            var record = _.defaults(record || {}, {name: 'XY'});
             var marker = new google.maps.Marker({
                 position: lat_lng,
                 map: this.map,
@@ -201,10 +124,12 @@ odoo.define('web.MapView', function (require) {
             return res;
         },
         init_map: function () {
+//        	centered in MELLIS Anosibe (Madagascar)
+        	var latlng = new google.maps.LatLng(-18.9391, 47.5223);
             this.map = new google.maps.Map(this.$el[0], {
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
-                center:new google.maps.LatLng(-18.9033,47.5211),
-                zoom: 13,
+                zoom: 17,
+                center: latlng,
                 minZoom: 3,
                 maxZoom: 20,
                 fullscreenControl: true,
@@ -267,16 +192,57 @@ odoo.define('web.MapView', function (require) {
         },
         on_maps_add_controls: function () {
             var route_mode = this.dataset.context.route_direction ? true : false;
-            new MapControl(this).open(route_mode);
-
-            var opt = this.options
-            new MapViewPlacesAutocomplete.MapPlacesAutocomplete(this, opt).open();
+            var map_controls = new MapControl(this, route_mode);
+            map_controls.setElement($(QWeb.render('MapViewControl', {})));
+            map_controls.start();
+            /* The three keys('model', 'method', 'fields') in the object assigned to variable 'options' is a mandatory keys.
+             * The idea is to be able to pass any 'object' that can be created within the map
+             *
+             * The fields options is divided into three parts:
+             * 1) 'general'
+             *     This configuration is for 'general' fields of the object, fields like name, phone, etc..
+             *     On the right side of each field is an attribute(s) from 'Places autocomplete'
+             * 2) 'geolocation'
+             *     This configuration is for geolocation fields (only 'latitude' and 'longitude')
+             * 3) 'address'
+             *     This configuration is similar to configuration used by 'google_places' widget
+             *
+             */
+            var options = {
+                'model': 'res.partner',
+                'method': 'create_partner_from_map',
+                'fields': {
+                    'general': {
+                        'name': 'name',
+                        'website': 'website',
+                        'phone': ['international_phone_number', 'formatted_phone_number'],
+                        'is_company': '',
+                    },
+                    'geolocation': {
+                        'latitude': 'partner_latitude',
+                        'longitude': 'partner_longitude'
+                    },
+                    'address': {
+                        'street': ['street_number', 'route', 'name'],
+                        'street2': ['administrative_area_level_3', 'administrative_area_level_4', 'administrative_area_level_5'],
+                        'city': ['locality', 'administrative_area_level_2'],
+                        'zip': 'postal_code',
+                        'state_id': 'administrative_area_level_1',
+                        'country_id': 'country'
+                    }
+                }
+            };
+            var place_autocomplete = new MapViewPlacesAutocomplete.MapPlacesAutocomplete(this, options);
+            place_autocomplete.setElement($(QWeb.render('MapPlacesAutomcomplete', {})));
+            place_autocomplete.start();
         },
+//        modified by WISO
         on_init_routes: function () {
             this.geocoder = new google.maps.Geocoder;
             this.directionsDisplay = new google.maps.DirectionsRenderer;
             this.directionsService = new google.maps.DirectionsService;
             this.directionsDisplay.setMap(this.map);
+            var context = this.dataset.context;
             this.on_calculate_and_display_route();
         },
         on_calculate_and_display_route: function (mode) {
@@ -302,6 +268,7 @@ odoo.define('web.MapView', function (require) {
                 avoidHighways: false,
                 avoidTolls: false
             }, function (response, status) {
+            	console.log(response);
                 if (status === 'OK') {
                     google.maps.event.trigger(self.map, 'resize');
                     self.directionsDisplay.setDirections(response);
@@ -434,250 +401,34 @@ odoo.define('web.MapView', function (require) {
                 self.on_load_markers();
             }, 1000);
             return $.when();
-        },
-        on_create_partner_new: function (place) {
-            var self = this;
-            if (place && place.hasOwnProperty('address_components')) {
-                var values = self.set_default_values_new();
-                var google_address = this.populate_address(place);
-                var requests = [];
-                _.each(this.options.fields.address, function (items, field) {
-                    requests.push(self.prepare_value(field, google_address[field]));
-                });
-                $.when.apply($, requests).done(function () {
-                    _.each(arguments, function (data, idx) {
-                        _.each(data, function (val, key) {
-                            if (val) {
-                                values[key] = val;
-                            }
-                        });
-                    });
-                    console.log(values);
-                    new Model(self.options.model).call(self.options.method, [values]).done(function (record) {
-                        if (record) {
-                            window.alert(_t('Successfully created new partner'));
-                            // empty search results
-//                            self.action_pac_form_visibility('hide');
-                            // reload map
-                            location.reload();
-                        } else {
-                            window.alert(_t('Fail to create new partner!'));
-                            $('#btn_create_customer').disabled = false;
-                        }
-                    }).fail(function (err, event) {
-                        window.alert(err);
-                        $('#btn_create_customer').disabled = false;
-                    });
-                });
-            }
-        },
-        populate_address: function (place) {
-            var self = this;
-            var fields_to_fill = {}
-            var result = {};
-            // initialize object key and value
-            _.each(this.options.fields.address, function (value, key) {
-                fields_to_fill[key] = [];
-            });
-            _.each(this.options.fields.address, function (options, field) {
-                var vals = _.map(place.address_components, function (components) {
-                    if (options instanceof Array) {
-                        var val = _.map(options, function (item) {
-                            if (_.contains(components.types, item)) {
-                                return components[GOOGLE_PLACES_COMPONENT_FORM[item]];
-                            } else {
-                                return false;
-                            }
-                        });
-                        return _.filter(val); // eliminate false
-                    } else {
-                        if (_.contains(components.types, options)) {
-                            return components[GOOGLE_PLACES_COMPONENT_FORM[options]];
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-                fields_to_fill[field] = _.flatten(_.filter(vals, function (val) {
-                    return val.length;
-                }));
-            });
-            console.log(fields_to_fill);
-            _.each(fields_to_fill, function (value, key) {
-                if (key == 'street' && !value.length) {
-                    var addrs = self.options.fields.address.street;
-                    if (addrs instanceof Array) {
-                        var addr = _.map(addrs, function (item) {
-                            return place[item];
-                        });
-                        result[key] = _.filter(addr).join(', ');
-                    } else {
-                        result[key] = place[addrs] || '';
-                    }
-                } else if (key == 'city') {
-                    result[key] = value.length ? value[0] : '';
-                } else {
-                    result[key] = value.join(', ');
-                }
-            });
-
-            return result;
-        },
-        set_default_values_new: function () {
-            var self = this;
-            var values = {};
-            _.each(this.options.fields, function (attrs, type) {
-                if (type === 'general') {
-                    _.each(attrs, function (option, field) {
-                        if (field == 'name') {
-                            var $name = $('#name_new').val();
-                            if ($name) {
-                                values[field] = $name;
-                            }
-                        } else if (field == 'website'){
-                            var $website = $('#website_new').val();
-                            if ($website) {
-                                values[field] = $website;
-                            }
-                        } else if (field == 'phone'){
-                            var $phone = $('#phone_new').val();
-                            if ($phone) {
-                                values[field] = $phone;
-                            }
-                        } else if (field == 'is_company') {
-                            var $partner_type = self.$el.find('input[name="company_type"]:checked');
-                            if ($partner_type.length && $partner_type.val() == 'company') {
-                                values[field] = true;
-                            }
-                        } else {
-                            values[field] = place[option];
-                        }
-                    });
-                } else if (type === 'geolocation') {
-                	values['partner_latitude'] = $('#span_lat').text();
-                	values['partner_longitude'] = $('#span_lng').text();
-                }
-            });
-            return values;
-        },
-        prepare_value: function (field_name, value) {
-            var def = $.Deferred();
-            var res = {};
-            if (field_name == 'state_id') {
-                new Model('res.country.state').call('search', [
-                    ['|', ['name', '=', value], ['code', '=', value]]
-                ]).done(function (record) {
-                    res[field_name] = record.length > 0 ? record[0] : false;
-                    def.resolve(res);
-                });
-            } else if (field_name == 'country_id') {
-                new Model('res.country').call('search', [
-                    ['|', ['name', '=', value], ['code', '=', value]]
-                ]).done(function (record) {
-                    res[field_name] = record.length > 0 ? record[0] : false;
-                    def.resolve(res);
-                });
-            } else {
-                res[field_name] = value;
-                def.resolve(res);
-            }
-            return def;
-        },
-        on_point_to_create_partner: function () {
-	        /*
-	         *  Cliquer n'importe où dans la carte.
-	         *  Une petite fenetre s'affichera avec un formalaire basique
-	         *  pour créer un partenaire
-	        */
-        	self = this;
-
-	        var geocoder = new google.maps.Geocoder;
-	    	var map = this.map;
-	    	var infowindow = new google.maps.InfoWindow();
-
-	    	function do_click(event) {
-
-	    		var pnt = event.latLng;
-            	  var lat = pnt.lat();
-                  lat = lat.toFixed(4);
-                  var lng = pnt.lng();
-                  lng = lng.toFixed(4);
-                  var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
-
-
-                    geocoder.geocode({'location': latlng}, function(results, status) {
-                        if (status === 'OK') {
-                          if (results[1]) {
-                            map.setZoom(16);
-                            var marker = new google.maps.Marker({
-                              position: latlng,
-                              map: map
-                            });
-                            var contents = '<p><strong>' + results[1].formatted_address + '</strong></p>';
-                            contents += '<p>Latitude : <span class="badge" id="span_lat" >'+lat+'</span></p>';
-                            contents += '<p>Longitude : <span class="badge" id="span_lng" >'+lng+'</span></p><br>';
-                            contents += '<input type="text" id="name_new" placeholder="Nom" class="form-control" />';
-                            contents += '<input type="text" id="website_new" placeholder="Site web" class="form-control" />';
-                            contents += '<input type="text" id="phone_new" placeholder="Telephone" class="form-control" /><br>';
-                            contents += '<input type="radio" name="company_type_new" checked="checked" value="person" class="radio-inline"/>';
-                            contents += '<label for="radio_company_person_new">Individual  </label>';
-        					contents += '<input type="radio" name="company_type_new" value="company" class="radio-inline"/>';
-        					contents += '<label for="radio_company_company_new">Company</label>';
-                            contents += '<hr><button class="btn btn-sm btn-primary" id="btn_create_customer"> Créer un partenaire ici!</button>';
-                            infowindow.setContent(contents);
-                            infowindow.open(map, marker);
-//                            document.getElementById('btn_create_customer').addEventListener("click", this.on_create_partner_new(results[1]));
-                            $('#btn_create_customer').click(function(){
-                            							console.log('latitude = '+lat+'&longitude = '+lng);
-                            							$('#btn_create_customer').disabled = true;
-                            							self.on_create_partner_new(results[1]);
-                            						});
-                          } else {
-                            window.alert('No results found');
-                          }
-                        } else {
-                          window.alert('Geocoder failed due to: ' + status);
-                        }
-                    });
-	    	}
-
-        	// Si le bouton "Ajouter un nouveau partenaire" a été cliqué, creatable = true (default false)
-        	if(self.creatable){
-		    	$(document).ready(function(){
-		    		google.maps.event.addListener(map, 'click', do_click);
-		    	});
-        	}else{
-        		google.maps.event.clearListeners(map, 'click');
-        	}
-    	}
+        }
     });
 
     var MapControl = Widget.extend({
-        init: function (parent) {
-            this._super.apply(parent, {});
+        init: function (parent, route) {
+            this._super.apply(this, arguments);
             this.parent = parent;
-            this.$controls = $(QWeb.render('MapViewControl', {}));
+            this.route = route;
         },
-        bind_events: function () {
-            this.$controls.on('click', '.btn_map_control', this.on_control_maps.bind(this));
-            this.$controls.on('click', 'p#map_layer', this.on_change_layer.bind(this));
-            this.$controls.on('click', 'p#travel_mode', this.on_change_mode.bind(this));
-            this.$controls.on('mouseleave', '#o_map_sidenav', this.on_map_sidenav_mouseleave.bind(this));
+        events: {
+            'click .btn_map_control': 'on_control_maps',
+            'click p#map_layer': 'on_change_layer',
+            'click p#travel_mode': 'on_change_mode',
+            'mouseleave #o_map_sidenav': 'on_map_sidenav_mouseleave'
         },
         _init_controls: function () {
-            this.bind_events();
-            this.parent.map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.$controls[0]);
+            this.parent.map.controls[google.maps.ControlPosition.LEFT_TOP].push(this.$el.get(0));
         },
-        open: function (route_mode) {
-            if (route_mode) {
-                this.$controls.find('#o_map_travel_mode').show();
+        start: function () {
+            if (this.route) {
+                this.$el.find('#o_map_travel_mode').show();
             }
             this.parent.shown.done(this.proxy('_init_controls'));
         },
         on_control_maps: function (ev) {
             $(ev.currentTarget).toggleClass('opened');
-            this.$controls.find('#o_map_sidenav').toggleClass('opened');
-            if (this.$controls.find('#o_map_sidenav').hasClass('opened')) {
+            this.$el.find('#o_map_sidenav').toggleClass('opened');
+            if (this.$el.find('#o_map_sidenav').hasClass('opened')) {
                 this.action_sidenav_visibility('show');
             } else {
                 this.action_sidenav_visibility('hide');
@@ -691,14 +442,12 @@ odoo.define('web.MapView', function (require) {
         },
         action_sidenav_visibility: function (action) {
             if (action == 'show') {
-                this.$controls.find('#o_map_sidenav').css({
-                    'width': '150px'
-                }).show();
-                this.$controls.find('.fa').removeClass('fa-bars').addClass('fa-angle-double-left');
+                this.$el.find('#o_map_sidenav').css({'width': '150px'}).show();
+                this.$el.find('.fa').removeClass('fa-bars').addClass('fa-angle-double-left');
             } else {
-                this.$controls.find('.btn_map_control').removeClass('opened');
-                this.$controls.find('#o_map_sidenav').removeClass('opened').hide();
-                this.$controls.find('.fa').removeClass('fa-angle-double-left').addClass('fa-bars');
+                this.$el.find('.btn_map_control').removeClass('opened');
+                this.$el.find('#o_map_sidenav').removeClass('opened').hide();
+                this.$el.find('.fa').removeClass('fa-angle-double-left').addClass('fa-bars');
             }
         },
         on_change_layer: function (ev) {
@@ -715,7 +464,7 @@ odoo.define('web.MapView', function (require) {
         on_change_mode: function (ev) {
             ev.preventDefault();
             $(ev.currentTarget).siblings().removeClass('active');
-            $(ev.currentTarget).toggleClass('active')
+            $(ev.currentTarget).toggleClass('active');
             var mode = $(ev.currentTarget).data('mode');
             this.parent.on_calculate_and_display_route(mode);
         },
@@ -748,38 +497,6 @@ odoo.define('web.MapView', function (require) {
                 this.bikeLayer.setMap(null);
                 this.bikeLayer = undefined;
             }
-        },
-        display_location: function () {
-        	var geocoder = new google.maps.Geocoder;
-        	var map = this.map;
-        	var infowindow = new google.maps.InfoWindow();
-            google.maps.event.addListener(map, 'click', function (event) {
-	              var pnt = event.latLng;
-            	  var lat = pnt.lat();
-		          lat = lat.toFixed(4);
-		          var lng = pnt.lng();
-		          lng = lng.toFixed(4);
-		          var latlng = {lat: parseFloat(lat), lng: parseFloat(lng)};
-
-
-		            geocoder.geocode({'location': latlng}, function(results, status) {
-		                if (status === 'OK') {
-		                  if (results[1]) {
-		                    map.setZoom(11);
-		                    var marker = new google.maps.Marker({
-		                      position: latlng,
-		                      map: map
-		                    });
-		                    infowindow.setContent(results[1].formatted_address);
-		                    infowindow.open(map, marker);
-		                  } else {
-		                    window.alert('No results found');
-		                  }
-		                } else {
-		                  window.alert('Geocoder failed due to: ' + status);
-		                }
-		              });
-	          });
         }
     });
 

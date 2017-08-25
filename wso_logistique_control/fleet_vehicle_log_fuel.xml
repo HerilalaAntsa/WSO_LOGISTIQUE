@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model='ir.ui.view' id='fleet_vehicle_log_fuel_form02'>
+            <field name="name">fleet.vehicle.log.fuel.form</field>
+            <field name="model">fleet.vehicle.log.fuel</field>
+            <field name="inherit_id" ref="wso_logistique_extend.fleet_vehicle_log_fuel_form2"/>
+            <field name="arch" type="xml">
+
+            	<xpath expr="//sheet" position="before" >
+            		<header>
+                        <button name="set_validate" string="Valider" type="object" states="draft"  />
+                        <field name="state" widget="statusbar" statusbar_visible="draft,done,paid" statusbar_colors='{"pending":"blue"}' readonly="1"/>
+                    </header>
+            	</xpath>
+
+            	<xpath expr="//field[@name='conducteur_id']" position="replace" >
+            		<field name="conducteur_id" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='demandeur']" position="replace" >
+            		<field name="demandeur" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='num_carte']" position="replace" >
+            		<field name="num_carte" string="Numero carte TOTAL" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='nom_carte']" position="replace" >
+            		<field name="nom_carte" string="Nom de la carte" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+				<xpath expr="//field[@name='fuel_type']" position="replace" >
+            		<field name="fuel_type" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+ 				<xpath expr="//field[@name='code_station']" position="replace" >
+            		<field name="code_station" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+ 				<xpath expr="//field[@name='lieu']" position="replace" >
+            		<field name="lieu" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+ 				<xpath expr="//field[@name='vehicle_id']" position="replace" >
+					<!-- <field name="vehicle_id" on_change="onchange_info_vehicle(vehicle_id)" attrs="{'readonly': [('state','=','done')]}" /> -->
+					<field name="vehicle_id" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='date_fuel']" position="replace" >
+					<field name="date_fuel" widget="date" attrs="{'required':[('state','=','draft')],'readonly': [('state','=','done')]}"  context="{'vehicle_id': vehicle_id}"/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='inv_ref']" position="replace" >
+					<field name="inv_ref" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='purchaser_id']" position="replace" >
+					<field name="purchaser_id" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='vendor_id']" position="replace" >
+					<field name="vendor_id" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='notes']" position="replace" >
+					<field name="notes" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='amount']" position="replace" >
+					<field 	name="amount"
+							context="{'price_per_liter': price_per_liter}"
+							attrs="{'readonly': [('state','=','done')]}"
+							/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='liter']" position="replace" >
+					<field name="liter" invisible="1" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='appoint']" position="replace" >
+            		<field 	name="appoint"
+            				context="{'qty_totale': qty_totale, 'liter':liter}"
+            				attrs="{'readonly': [('state','=','done')]}"
+            				/>
+
+				</xpath>
+
+				<xpath expr="//field[@name='price_per_liter']" position="replace" >
+					<field 	name="price_per_liter"
+							required="1"
+							context="{'qty_totale': qty_totale}"
+							attrs="{'readonly': [('state','=','done')]}"
+							/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='qty_totale']" position="replace" >
+
+					<field name="qty_totale"
+            			   string="Total carburant"
+            			   context="{'price_per_liter': price_per_liter, 'appoint':appoint}"
+            			   attrs="{'readonly': [('state','=','done')]}"
+            			   />
+            	</xpath>
+
+            	<xpath expr="//field[@name='marque_vehicle']" position="replace" >
+					<field name="marque_vehicle" attrs="{'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='vehicle_consommation']" position="replace" >
+            		<field name="vehicle_consommation" groups="wso_logistique_extend.group_flotte_access" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='distance']" position="replace" >
+					<field name="distance" class="oe_inline" readonly="1" attrs="{'invisible': [('state','in','draft')]}" />
+            	</xpath>
+
+            	<xpath expr="//label[@for='distance']" position="replace" >
+            		<label for="distance" string="Distance effectuée" attrs="{'invisible':[('state','=','draft')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='consommation']" position="replace" >
+					<field name="consommation" string="Derniere cons/100" readonly="1" attrs="{'invisible': [('state','=','draft')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='odometer']" position="replace" >
+					<field name="odometer" attrs="{'invisible':[('state','=','draft')] , 'readonly': [('state','=','done')]}"  />
+            	</xpath>
+
+            	<xpath expr="//label[@for='odometer']" position="replace" >
+            		<label for="odometer" string="Kilomètrage au compteur" attrs="{'invisible':[('state','=','draft')]}"  />
+            	</xpath>
+
+            	<xpath expr="//field[@name='last_kilom']" position="after" >
+            		<field name="kilom_compteur" string="Kilomètrage au compteur" attrs="{'invisible': [('state','=','done')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='odometer_unit']" position="after" >
+            		<field name="odometer_unit" class="oe_inline" attrs="{'invisible': [('state','=','draft')]}" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='last_kilom']" position="replace" >
+            		<field name="last_kilom" class="oe_inline" string="Dernier relevé kilomètrique" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath>
+
+
+            	<!-- <xpath expr="//field[@name='odometer']" position="replace" >
+					<field name="odometer" attrs="{'readonly': [('state','=','done')]}" />
+            	</xpath> -->
+
+            	<!-- <xpath expr="//field[@name='distance']" position="before" >
+            		<button name="last_kilom_actualise" states="draft"
+                        string="(Actualiser last kilometer)" class="oe_link oe_edit_only"
+                        type="object" help="Recompute last_kilometer"/>
+            	</xpath> -->
+
+ 			</field>
+        </record>
+
+        <record model='ir.ui.view' id='fleet_vehicle_log_fuel_tree_extend'>
+            <field name="name">fleet.vehicle.log.fuel.tree</field>
+            <field name="model">fleet.vehicle.log.fuel</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_log_fuel_tree"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//tree['Fuel Logs']" position="replace" >
+            		<tree string="Fuel Logs" colors="blue:state == 'draft'" >
+	                    <field name="date_fuel" widget="date" />
+	                    <field name="vehicle_id" />
+	                    <field name="demandeur" />
+	                    <field name="last_kilom" />
+	                    <!-- <field name="odometer" /> -->
+	                    <field name="kilom_compteur" string="Kilomètrage" />
+	                    <field name="distance" />
+	                    <field name="consommation" />
+	                    <field name="purchaser_id" />
+	                    <field name="inv_ref" invisible="1"/>
+	                    <field name="vendor_id" string="Source"/>
+	                    <field name="qty_totale" string="Carburant total" />
+	                    <field name="amount" sum="Price"/>
+	                    <field name="state" invisible="1"/>
+	                </tree>
+            	</xpath>
+            </field>
+        </record>
+
+
+        <record model='ir.ui.view' id='fleet_vehicle_log_fuel_search_extend'>
+            <field name="name">fleet.vehicle.log.fuel.search</field>
+            <field name="model">fleet.vehicle.log.fuel</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_log_fuel_search"/>
+            <field name="arch" type="xml">
+
+            	<xpath expr="//filter[@name='groupby_vehicle']" position="after" >
+					<filter name="groupby_date_fuel" context="{'group_by' : 'date_fuel'}" string="Date"/>
+					<filter name="groupby_purchaser" context="{'group_by' : 'purchaser_id'}" string="Acheteur"/>
+            	</xpath>
+
+            </field>
+        </record>
+
+
+        <record id="view_fleet_vehicle_log_fuel_groups" model="ir.ui.view">
+            <field name="name">Actualisation des saisies</field>
+            <field name="model">fleet.vehicle.log.fuel.groups</field>
+            <field name="arch" type="xml">
+               <form string="" version="7.0">
+                     <group>
+                        <label string="vous êtes sur de lancer l'actualisation ?"/>
+
+                    </group>
+
+                    <footer>
+                        <button name="actualisation" string="Actualiser" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+		<act_window name="Actualiser"
+			res_model="fleet.vehicle.log.fuel.groups"
+			src_model="fleet.vehicle.log.fuel"
+			view_mode="form"
+			target="new"
+			key2="client_action_multi"
+			id="mrp_synchronize"/>
+
+	</data>
+</openerp>

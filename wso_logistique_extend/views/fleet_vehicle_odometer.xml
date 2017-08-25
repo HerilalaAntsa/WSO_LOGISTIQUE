@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record model='ir.ui.view' id='fleet_vehicle_odometer_form_extend'>
+            <field name="name">fleet.vehicle.odometer.form</field>
+            <field name="model">fleet.vehicle.odometer</field>
+            <field name="inherit_id" ref="fleet.fleet_vehicle_odometer_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//sheet" position="replace" >
+					<sheet>
+						<group>
+							<group>
+	                            <field name="date" readonly="1" />
+	                            <field name="vehicle_id" readonly="1"  class="oe_inline" context="{'date': date}" />
+	                        </group>
+	                        <group>
+	                             <field name="last_value" class="oe_inline" readonly="1" />
+	                             <field name="value" class="oe_inline" readonly="1" />
+	                             <field name="unit" string=" " class="oe_inline"/>
+	                        </group>
+						</group>
+                    </sheet>
+            	</xpath>
+
+            </field>
+        </record>
+
+	</data>
+</openerp>

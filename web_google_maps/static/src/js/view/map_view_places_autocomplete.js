@@ -35,7 +35,71 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
         'point_of_interest': 'long_name'
     };
 
+    function gmaps_populate_address(place, address_options, delimiter) {
+        var address_options = address_options || {};
+        var fields_delimiter = delimiter || {
+            street: " ",
+            street2: ", "
+        };
+        var fields_to_fill = {};
+        var result = {};
+        // initialize object key and value
+        _.each(address_options, function (value, key) {
+            fields_to_fill[key] = [];
+        });
+
+        _.each(address_options, function (options, field) {
+            var vals = _.map(place.address_components, function (components) {
+                if (options instanceof Array) {
+                    var val = _.map(options, function (item) {
+                        if (_.contains(components.types, item)) {
+                            return components[GOOGLE_PLACES_COMPONENT_FORM[item]];
+                        } else {
+                            return false;
+                        }
+                    });
+                    return _.filter(val); // eliminate false
+                } else {
+                    if (_.contains(components.types, options)) {
+                        return components[GOOGLE_PLACES_COMPONENT_FORM[options]];
+                    } else {
+                        return false;
+                    }
+                }
+            });
+            fields_to_fill[field] = _.flatten(_.filter(vals, function (val) {
+                return val.length;
+            }));
+        });
+
+        _.each(fields_to_fill, function (value, key) {
+            var dlmter = fields_delimiter.hasOwnProperty(key) ? fields_delimiter[key] : ' ';
+            if (key == 'street' && !value.length) {
+                var addrs = address_options.street;
+                if (address_options instanceof Array) {
+                    var addr = _.map(addrs, function (item) {
+                        return place[item];
+                    });
+                    result[key] = _.filter(addr).join(dlmter);
+                } else {
+                    result[key] = place[addrs] || '';
+                }
+            } else if (key == 'city') {
+                result[key] = value.length ? value[0] : '';
+            } else {
+                result[key] = value.join(dlmter);
+            }
+        });
+
+        return result;
+    }
+
     var MapPlacesAutocomplete = Widget.extend({
+        events: {
+            'click .btn_places_control': 'on_control_places',
+            'click button#pac-button-create': 'on_create_partner',
+            'click input[id^="changetype"], input[id="use-strict-bounds"]': 'on_place_changetype'
+        },
         init: function (parent, options) {
             this._super.apply(this, arguments);
             this.options = options;
@@ -43,27 +107,6 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
             this.place_automplete = undefined;
             this.place_marker = undefined;
             this.marker_infowindow = undefined;
-            this.$el = $(QWeb.render('MapPlacesAutomcomplete', {}));
-        },
-        bind_events: function () {
-            this.$el.on('click', '.btn_create_partner', this.on_point_partner.bind(this));
-            this.$el.on('click', '.btn_places_control', this.on_control_places.bind(this));
-            this.$el.on('click', 'button#pac-button-create', this.on_create_partner.bind(this));
-            this.$el.on('click', 'input[id^="changetype"]', this.on_place_changetype.bind(this));
-            this.$el.on('click', 'input[id="use-strict-bounds"]', this.on_place_changetype.bind(this));
-        },
-//        En cliquant le boutant 'Ajouter partenaire'
-        on_point_partner: function (ev) {
-        	$(ev.currentTarget).toggleClass('opened');
-        	// Si le bouton ajouter est activé (cliqué)
-            if($(ev.currentTarget).hasClass('opened')){
-	        	this.parent.map.setOptions({ draggableCursor: 'crosshair' });
-	        	this.parent.creatable = true;
-            }else{
-            	this.parent.creatable = false;
-	        	this.parent.map.setOptions({ draggableCursor: '' });
-            }
-        	this.parent.on_point_to_create_partner();
         },
         on_control_places: function (ev) {
             $(ev.currentTarget).toggleClass('opened');
@@ -96,12 +139,11 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
             this.parent.map.controls[google.maps.ControlPosition.TOP_CENTER].push(this.$el.get(0));
         },
         _set_input_controls: function () {
-            this.bind_events();
             this.place_automplete = new google.maps.places.Autocomplete(this.$el.find('input#pac-input').get(0));
             this.place_automplete.bindTo('bounds', this.parent.map);
             this.on_place_changed();
         },
-        open: function () {
+        start: function () {
             this._set_input_controls();
             this.parent.shown.done(this.proxy('_init_form'));
         },
@@ -249,7 +291,7 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
             var self = this;
             if (this.place && this.place.hasOwnProperty('address_components')) {
                 var values = self.set_default_values(this.place);
-                var google_address = this.populate_address(this.place);
+                var google_address = gmaps_populate_address(this.place, this.options.fields.address);
                 var requests = [];
                 _.each(this.options.fields.address, function (items, field) {
                     requests.push(self.prepare_value(field, google_address[field]));
@@ -266,7 +308,7 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
                         if (record) {
                             window.alert(_t('Successfully created new partner'));
                             // empty search results
-                            	// self.action_pac_form_visibility('hide');
+                            self.action_pac_form_visibility('hide');
                             // reload map
                             self.parent.reload();
                         } else {
@@ -277,58 +319,6 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
                     });
                 });
             }
-        },
-        populate_address: function (place) {
-            var self = this;
-            var fields_to_fill = {}
-            var result = {};
-            // initialize object key and value
-            _.each(this.options.fields.address, function (value, key) {
-                fields_to_fill[key] = [];
-            });
-
-            _.each(this.options.fields.address, function (options, field) {
-                var vals = _.map(place.address_components, function (components) {
-                    if (options instanceof Array) {
-                        var val = _.map(options, function (item) {
-                            if (_.contains(components.types, item)) {
-                                return components[GOOGLE_PLACES_COMPONENT_FORM[item]];
-                            } else {
-                                return false;
-                            }
-                        });
-                        return _.filter(val); // eliminate false
-                    } else {
-                        if (_.contains(components.types, options)) {
-                            return components[GOOGLE_PLACES_COMPONENT_FORM[options]];
-                        } else {
-                            return false;
-                        }
-                    }
-                });
-                fields_to_fill[field] = _.flatten(_.filter(vals, function (val) {
-                    return val.length;
-                }));
-            });
-            _.each(fields_to_fill, function (value, key) {
-                if (key == 'street' && !value.length) {
-                    var addrs = self.options.fields.address.street;
-                    if (addrs instanceof Array) {
-                        var addr = _.map(addrs, function (item) {
-                            return place[item];
-                        });
-                        result[key] = _.filter(addr).join(', ');
-                    } else {
-                        result[key] = place[addrs] || '';
-                    }
-                } else if (key == 'city') {
-                    result[key] = value.length ? value[0] : '';
-                } else {
-                    result[key] = value.join(', ');
-                }
-            });
-
-            return result;
         },
         prepare_value: function (field_name, value) {
             var def = $.Deferred();
@@ -357,7 +347,8 @@ odoo.define('web.MapViewPlacesAutocomplete', function (require) {
 
     return {
         'MapPlacesAutocomplete': MapPlacesAutocomplete,
-        'GOOGLE_PLACES_COMPONENT_FORM': GOOGLE_PLACES_COMPONENT_FORM
+        'GOOGLE_PLACES_COMPONENT_FORM': GOOGLE_PLACES_COMPONENT_FORM,
+        'gmaps_populate_address': gmaps_populate_address
     };
 
 });

@@ -7,153 +7,153 @@
             <field name="arch" type="xml">
             	<xpath  expr="/form/sheet" position="replace" >
             		<sheet>
-					<field name="image_medium" widget='image' class="oe_left oe_avatar"/>
-					<div class="oe_title">
-                            <label for="license_plate" class="oe_edit_only"/>
-                            <h1>
-                                <field name="license_plate" class="oe_inline" />
-                            </h1>
-                            <label for="model_id" class="oe_edit_only"/>
-                            <h2>
-                                <field name="model_id" class="oe_inline"/>
-                            </h2>
+						<field name="image_medium" widget='image' class="oe_left oe_avatar"/>
+						<div class="oe_title">
+	                            <label for="license_plate" class="oe_edit_only"/>
+	                            <h1>
+	                                <field name="license_plate" class="oe_inline" />
+	                            </h1>
+	                            <label for="model_id" class="oe_edit_only"/>
+	                            <h2>
+	                                <field name="model_id" class="oe_inline"/>
+	                            </h2>
 
-	                        <label for="partner_id" string="Affectation" class="oe_edit_only"/>
-	                        <p>
-	                        	<field name="partner_id"  />
-	                        </p>
+		                        <label for="partner_id" string="Affectation" class="oe_edit_only"/>
+		                        <p>
+		                        	<field name="partner_id"  />
+		                        </p>
 
-	                        <label for="partner_id" string="Client" class="oe_edit_only"/>
-	                        <label for="proprietaire_id" string="Proprietaire" class="oe_edit_only"/>
-	                        <p>
-	                        	<field name="partner_id"  />
-	                        	<field name="proprietaire_id"  />
-	                        </p>
+		                        <label for="partner_id" string="Client" class="oe_edit_only"/>
+		                        <label for="proprietaire_id" string="Proprietaire" class="oe_edit_only"/>
+		                        <p>
+		                        	<field name="partner_id"  />
+		                        	<field name="proprietaire_id"  />
+		                        </p>
 
-	                        <label for="tag_ids" class="oe_edit_only"/>
-	                        <p>
-	                        	<field name="tag_ids" widget="many2many_tags" />
-	                        	<label for="is_flotte" string="Flotte"/>
-            					<field name="is_flotte" />
-	                        </p>
+		                        <label for="tag_ids" class="oe_edit_only"/>
+		                        <p>
+		                        	<field name="tag_ids" widget="many2many_tags" />
+		                        	<label for="is_flotte" string="Flotte"/>
+	            					<field name="is_flotte" />
+		                        </p>
 
-                    </div> -->
-                    <div class="oe_right oe_button_box">
-                            <button name="return_action_to_open"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-book"
-                                context="{'xml_id':'fleet_vehicle_log_contract_act'}"
-                                help="show the contract for this vehicle">
-                                <field name="contract_count" widget="statinfo" string="Contracts"/>
-                            </button>
-                            <button name="act_show_log_cost"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-usd"
-                                help="show all the costs for this vehicle"
-                                groups="fleet.group_fleet_manager">
-                                <field name="cost_count" widget="statinfo" string="Costs"/>
-                            </button>
-                            <button name="return_action_to_open"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-wrench"
-                                context="{'xml_id':'fleet_vehicle_log_services_act'}"
-                                help="show the services logs for this vehicle" >
-                                <field name="service_count" widget="statinfo" string="Services"/>
-                            </button>
-                            <button name="return_action_to_open"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-flask"
-                                context="{'xml_id':'fleet_vehicle_log_fuel_act'}"
-                                help="show the fuel logs for this vehicle" >
-                                <field name="fuel_logs_count" widget="statinfo" string="Fuel"/>
-                            </button>
-                            <button name="return_action_to_open"
-                                type="object"
-                                class="oe_stat_button"
-                                icon="fa-tachometer"
-                                context="{'xml_id':'fleet_vehicle_odometer_act'}"
-                                help="show the odometer logs for this vehicle" >
-                                <field name="odometer_count" widget="statinfo" string="Odometer"/>
-                            </button>
-                        </div>
+	                    </div>
+	                    <div class="oe_right oe_button_box">
+	                            <button name="return_action_to_open"
+	                                type="object"
+	                                class="oe_stat_button"
+	                                icon="fa-book"
+	                                context="{'xml_id':'fleet_vehicle_log_contract_act'}"
+	                                help="show the contract for this vehicle">
+	                                <field name="contract_count" widget="statinfo" string="Contracts"/>
+	                            </button>
+	                            <button name="act_show_log_cost"
+	                                type="object"
+	                                class="oe_stat_button"
+	                                icon="fa-usd"
+	                                help="show all the costs for this vehicle"
+	                                groups="fleet.group_fleet_manager">
+	                                <field name="cost_count" widget="statinfo" string="Costs"/>
+	                            </button>
+	                            <button name="return_action_to_open"
+	                                type="object"
+	                                class="oe_stat_button"
+	                                icon="fa-wrench"
+	                                context="{'xml_id':'fleet_vehicle_log_services_act'}"
+	                                help="show the services logs for this vehicle" >
+	                                <field name="service_count" widget="statinfo" string="Services"/>
+	                            </button>
+	                            <button name="return_action_to_open"
+	                                type="object"
+	                                class="oe_stat_button"
+	                                icon="fa-flask"
+	                                context="{'xml_id':'fleet_vehicle_log_fuel_act'}"
+	                                help="show the fuel logs for this vehicle" >
+	                                <field name="fuel_logs_count" widget="statinfo" string="Fuel"/>
+	                            </button>
+	                            <button name="return_action_to_open"
+	                                type="object"
+	                                class="oe_stat_button"
+	                                icon="fa-tachometer"
+	                                context="{'xml_id':'fleet_vehicle_odometer_act'}"
+	                                help="show the odometer logs for this vehicle" >
+	                                <field name="odometer_count" widget="statinfo" string="Odometer"/>
+	                            </button>
+	                        </div>
 
-                    <notebook>
-						<page string="Propriétés">
-							<group>
-								<group >
-	                                <field name="driver_id" invisible="1"/>
-	                                <field name="conducteur_id" />
-	                                <field name="location" />
-	                                <field name="vin_sn" />
-	                                <field name="car_value" />
-	                                <field name="observation" placeholder="Observations..." />
+	                    <notebook>
+							<page string="Propriétés">
+								<group>
+									<group >
+		                                <field name="driver_id" invisible="1"/>
+		                                <field name="conducteur_id" />
+		                                <field name="location" />
+		                                <field name="vin_sn" />
+		                                <field name="car_value" />
+		                                <field name="observation" placeholder="Observations..." />
+		                            </group>
+		                            <group >
+		                                <label for="odometer" />
+		                                <div>
+		                                    <field name="odometer" class="oe_inline" attrs="{'readonly':[('panne_tableau_kilometrique', '=',True)]}" />
+		                                    <field name="odometer_unit" class="oe_inline" attrs="{'readonly':[('panne_tableau_kilometrique', '=',True)]}" />
+		                                </div>
+		                                <field name="panne_tableau_kilometrique"/>
+		                                <field name="acquisition_date" />
+										<field name="date_ammortissement"/>
+		                                <field name="date_intervention" />
+		                                <field name="state" />
+		                            </group>
 	                            </group>
-	                            <group >
-	                                <label for="odometer" />
-	                                <div>
-	                                    <field name="odometer" class="oe_inline" attrs="{'readonly':[('panne_tableau_kilometrique', '=',True)]}" />
-	                                    <field name="odometer_unit" class="oe_inline" attrs="{'readonly':[('panne_tableau_kilometrique', '=',True)]}" />
-	                                </div>
-	                                <field name="panne_tableau_kilometrique"/>
-	                                <field name="acquisition_date" />
-									<field name="date_ammortissement"/>
-	                                <field name="date_intervention" />
-	                                <field name="state" />
+							</page>
+							<page string="Options">
+								<group>
+									<group>
+										<field name="seats" />
+		                                <field name="doors" />
+		                                <field name="color" />
+									</group>
+
+									<group>
+										<!-- <field name="puissance_admin"/> -->
+										<field name="poids_total_charge"/>
+										<field name="poids_a_vide"/>
+										<field name="charge_utile"/>
+									</group>
+								</group>
+							</page>
+							<page string="Option du moteur">
+								<group>
+									<group>
+										<field name="transmission" />
+										<field name="num_moteur"/>
+										<field name="horsepower" />
+	                              	</group>
+	                              	<group>
+	                                	<field name="co2" />
+	                                	<field name="horsepower_tax" />
+	                                	<field name="power" />
+	                                </group>
 	                            </group>
-                            </group>
-						</page>
-						<page string="Options">
-							<group>
+							</page>
+							<page string="Details carburant">
 								<group>
-									<field name="seats" />
-	                                <field name="doors" />
-	                                <field name="color" />
-								</group>
+									<group>
+										<field name="fuel_type" required="1" />
+	                              	</group>
+	                              	<group>
+	                                	<field name="capacite_res" />
+	                                	<field name="consommation" />
+	                                </group>
+	                            </group>
+							</page>
 
+							<page string="Media">
 								<group>
-									<!-- <field name="puissance_admin"/> -->
-									<field name="poids_total_charge"/>
-									<field name="poids_a_vide"/>
-									<field name="charge_utile"/>
-								</group>
-							</group>
-						</page>
-						<page string="Option du moteur">
-							<group>
-								<group>
-									<field name="transmission" />
-									<field name="num_moteur"/>
-									<field name="horsepower" />
-                              	</group>
-                              	<group>
-                                	<field name="co2" />
-                                	<field name="horsepower_tax" />
-                                	<field name="power" />
-                                </group>
-                            </group>
-						</page>
-						<page string="Details carburant">
-							<group>
-								<group>
-									<field name="fuel_type" required="1" />
-                              	</group>
-                              	<group>
-                                	<field name="capacite_res" />
-                                	<field name="consommation" />
-                                </group>
-                            </group>
-						</page>
+	                            </group>
+							</page>
 
-						<page string="Media">
-							<group>
-                            </group>
-						</page>
-
-					</notebook> -->
+						</notebook>
 					</sheet>
             	</xpath>
             </field>

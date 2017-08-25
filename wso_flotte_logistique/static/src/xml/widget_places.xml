@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-extend="web_google_maps.WsoMapPlacesAutomcomplete">
+    	<t t-jquery="div.o_map_places_control" t-operation="append">
+    	    <div class="btn_create_partner" title="Create a partner">
+	            <i class="fa fa-plus" aria-hidden="true"></i>
+	        </div>
+	    </t>
+    </t>
+</templates>

@@ -75,22 +75,6 @@
     background: #7c7bad;
 }
 
-.btn_create_partner{
-    margin-top: -29px;
-    margin-left: -148px;
-    cursor: pointer;
-    line-height: 20px;
-    padding: 4.5px 10px;
-    background: #ffffff;
-    border-radius: 2px;
-    width: 30px;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
-}
-
-.btn_create_partner.opened{
-    background: #008080;
-}
-
 .o_map_routes_window {
     min-width: 100px;
     border-radius: 2px;

@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data>
-        <act_window
-	        	id="act_res_partner_map"
-	        	name="Map"
-	        	res_model="res.partner"
-	        	view_type="map"
-	        	view_mode="map" />
-
+        <act_window id="act_res_partner_map" name="Map" res_model="res.partner" view_type="map" view_mode="map" />
         <record id="view_partner_form" model="ir.ui.view">
             <field name="name">Google Places Partner Form</field>
             <field name="model">res.partner</field>

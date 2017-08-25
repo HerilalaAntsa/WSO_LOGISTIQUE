@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+
+		<record id="hide_menu" model="res.groups">
+		    <field name="name">Hide</field>
+		    <field name="comment">Hide.</field>
+		</record>
+
+		<record id="fuel_vehicle_gestion_form" model="ir.ui.view">
+            <field name="name">fleet.vehicle.fuel.gestion.form</field>
+            <field name="model">fleet.vehicle.fuel.gestion</field>
+            <field name="arch" type="xml">
+                <form string="Gestion de carburant" >
+                    <sheet>
+                        <group>
+                            <group>
+                            		<field name="date_fuel" />
+                            		<field name="hour_fuel"  widget="float_time" />
+                               		<field name="vehicle_id" string="Véhicule" options="{'no_create': True}" />
+                               		<field name="beneficiaire" string="Bénéficiaire" />
+                               		<field name="partner_id" string="Société / Service" options="{'no_create': True}" />
+                               		<field name="kilometrage" attrs="{'invisible': [('panne_tableau','=',True)]}" />
+                               		<field name="panne_tableau" />
+                               		<field name="tag_ip" attrs="{'required': [('panne_tableau','=',True)], 'invisible': [('panne_tableau','=',False)]}" />
+                            </group>
+                            <group>
+                                    <field name="libelle_fuel" string="Libellé" />
+                                    <field name="order_number" string="N° BC" />
+                                    <field name="invoice_number" string="N° Facture"/>
+                                    <field name="price_per_liter" string="Prix Unitaire" />
+                                    <field name="qty_fuel" string="Quantité en Litre " />
+                                    <field name="amount_fuel" />
+                                    <field name="complement_fuel" string="Complément Carburant espèces" />
+                                    <field name="consommation_vehicle" invisible="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="fuel_vehicle_gestion_tree" model="ir.ui.view">
+            <field name="name">fleet.vehicle.fuel.gestion.tree</field>
+            <field name="model">fleet.vehicle.fuel.gestion</field>
+            <field name="arch" type="xml">
+                <tree string="Gestion de carburant" >
+                   <field name="date_fuel"/>
+                   <field name="vehicle_id" string="Véhicule" />
+                   <field name="beneficiaire" string="Bénéficiaire"/>
+                   <field name="kilometrage" />
+                   <field name="amount_fuel" />
+                   <field name="price_per_liter" />
+                   <field name="qty_fuel" />
+                   <field name="hour_fuel" />
+                   <field name="partner_id" string="Société / Service" />
+                   <field name="libelle_fuel" string="Libellé" />
+                   <field name="order_number" />
+                   <field name="invoice_number" />
+                   <field name="tag_ip" />
+                   <field name="complement_fuel" string="Complément Carbu."/>
+                   <field name="consommation_vehicle" string="Cons. au 100Km" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="fuel_vehicle_gestion_filter" model="ir.ui.view">
+            <field name="name">fleet.vehicle.fuel.gestion.select</field>
+            <field name="model">fleet.vehicle.fuel.gestion</field>
+            <field name="arch" type="xml">
+                <search string="Search fuel Order">
+                    <field name="vehicle_id" string="Véhicule"/>
+                    <field name="order_number" />
+                    <field name="invoice_number" />
+                    <filter icon="terp-gtk-go-back-rtl" name="not_invoiced" />
+                    <group expand="0" string="Group By...">
+                    	<filter string="Date" icon="terp-partner" domain="[]" context="{'group_by':'date_fuel'}"/>
+                        <filter string="Bénéficiaire" icon="terp-partner" domain="[]" context="{'group_by':'beneficiaire'}"/>
+                        <filter string="Véhicule" icon="terp-partner" domain="[]" context="{'group_by':'vehicle_id'}"/>
+                        <filter string="Libellé" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'libelle'}"/>
+                        <filter string="BC" icon="terp-go-month" domain="[]" context="{'group_by':'order_number'}"/>
+                        <filter string="Numéro Facture" icon="terp-go-month" domain="[]" context="{'group_by':'invoice_number'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="fuel_vehicle_gestion_action" model="ir.actions.act_window">
+			<field name="name">Gestion de carburant</field>
+			<field name="res_model">fleet.vehicle.fuel.gestion</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="fuel_vehicle_gestion_tree"/>
+		</record>
+
+
+		<menuitem action="fuel_vehicle_gestion_action" sequence="9" name="Saisie Carburant" parent="fleet.fleet_vehicles" id="fleet_vehicle_log_fuel_extend_menu" groups="fleet.fleet_group_manager"/>
+
+		<!-- MENU A CACHER -->
+		<!-- <menuitem action="fleet.fleet_vehicle_log_fuel_act"  parent="fleet.fleet_vehicles" id="fleet.fleet_vehicle_log_fuel_menu" groups="hide_menu"/> -->
+		<!-- <menuitem action="fleet_vehicle_log_fuel_act" parent="fleet_vehicles" id="fleet_vehicle_log_fuel_menu" groups="group_fleet_user"/>  -->
+
+	</data>
+</openerp>

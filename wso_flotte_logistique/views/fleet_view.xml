@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <record id="act_show_feuille_de_route_by_vehicle" model="ir.actions.act_window">
+            <field name="name">act.show.feuille.de.route.by.vehicle</field>
+            <field name="res_model">wso.flotte.route</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_vehicle_id': active_id}</field>
+            <field name="view_id" ref="view_feuille_de_route_tree"/>
+            <field name="help" type="html">
+              <p class="oe_view_nocontent_create">
+                Créer une feuille de route pour cette.
+              </p><p>
+                Lister les feuilles de route pour cette voiture
+              </p>
+            </field>
+        </record>
+
+        <record id="wso_fleet_view_buttons" model="ir.ui.view">
+            <field name="name">wso.fleet.view.buttons</field>
+            <field name="model">fleet.vehicle</field>
+            <field name="inherit_id" ref="wso_parc_auto.fleet_vehicle_parc_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr=" /form/sheet//div[@class='oe_right oe_button_box']"  position="inside">
+                    <button name="%(wso_flotte_logistique.act_show_feuille_de_route_by_vehicle)d"
+                    		type="action"
+                        	class="oe_stat_button"
+                        	icon="fa-pencil-square-o">
+						<field string="Feuille de route" name="feuille_de_route_count" widget="statinfo"/>
+                   	</button>
+               	</xpath>
+            </field>
+        </record>
+</odoo>

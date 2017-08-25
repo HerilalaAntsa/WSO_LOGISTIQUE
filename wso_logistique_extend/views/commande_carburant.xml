@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    	<!-- debut form fuel_order_line -->
+
+	        <record id="fuel_order_line_form" model="ir.ui.view">
+            <field name="name">fuel.order.line.form</field>
+            <field name="model">fuel.order.line</field>
+            <field name="arch" type="xml">
+                <form string="fuel Order Line" >
+                    <sheet>
+                        <group>
+                            <group>
+                            		<field name="state" invisible="1" />
+                               		<field name="vehicle_id"  required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="marque_vehicle" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="vehicle_consommation" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}" groups="wso_logistique_extend.group_flotte_access" />
+                               		<field name="conducteur_id" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="entity" string="Service / Société" required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="demandeur" string="Demandeur" required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                               		<field name="pompiste"  attrs="{'readonly':[('state', '=', 'done')]}"/>
+                            </group>
+                            <group>
+                                    <field name="date_planned" string="Date prévue" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                                    <field name="date_livraison" string="Date de livraison" readonly="1" attrs="{'invisible':[('state','not in',['open','done'])]}"/>
+                                    <field name="qty_demandee" string="Quantité demandée" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                                    <field name="fuel_type" string="Carburant"  attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+                                    <field name="price_per_liter"
+                                   		string="Prix du litre"
+                                   		attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+
+                                    <field name="qty_prise"
+                                    	context="{'appoint': appoint}"
+                                    	string="Quantité transférée "
+                                    	attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+
+                                    <field name="appoint"
+                                    	string="Appoint "
+                                    	context="{'qty_prise': qty_prise}"
+                                    	attrs="{'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+
+                                    <field name="qty_totale"
+                                    	context="{'price_per_liter': price_per_liter}"
+                                    	string="Total carburant"
+                                    	attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+
+                                    <field name="montant"
+                                    	context="{'price_per_liter': price_per_liter}"
+                                    	string="Montant"
+                                    	attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+                                    <field name="odometer" string="Kilometrage"  attrs="{'required':[('state','=','open')],'invisible':[('state','not in',['open','done','cancel'])],'readonly':[('state', '=', 'done')]}"/>
+                            </group>
+                        </group>
+                        <notebook>
+                        <page string="Notes">
+                            <field name="name"/>
+                        </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+<!-- fin fuel order line form  -->
+
+	<!-- debut liste fuel line -->
+        <record id="view_fuel_order_line_tree" model="ir.ui.view">
+            <field name="name">fuel.order.line.tree</field>
+            <field name="model">fuel.order.line</field>
+            <field name="arch" type="xml">
+                <tree string="fuel Order Lines" create="false">
+                   <field name="vehicle_id"/>
+                   <field name="entity" />
+                   <field name="demandeur" />
+                   <field name="qty_demandee" />
+                   <field name="qty_prise" />
+                   <field name="appoint" />
+                   <field name="qty_totale" />
+                   <field name="pompiste" />
+                   <field name="conducteur_id" />
+                   <field name="state" string="Statut"/>
+                   <field name="date_livraison" />
+                </tree>
+            </field>
+        </record>
+
+        <record id="fuel_order_form" model="ir.ui.view">
+            <field name="name">fuel.order.form</field>
+            <field name="model">fuel.order</field>
+            <field name="arch" type="xml">
+                <form string="Commande carburant" version="7.0">
+                <header>
+                	<button name="confirm_order" string="Confirmer" type="object" states="draft" class="oe_highlight"/>
+                	<button name="validate_order" string="Valider" type="object" states="confirmed" class="oe_highlight"/>
+                	<button name="set_done_order" string="Terminer" type="object" states="open" class="oe_highlight"/>
+                    <button name="action_cancel" states="draft,confirmed,open,done" string="Annuler la demande" type="object" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,open,done,cancel" statusbar_colors='{"cancel":"grey","confirmed":"bleu"}' readonly="1"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <label string="Bon de commande" />
+                            <field name="name" class="oe_inline" readonly="1"/>
+                        </h1>
+                    </div>
+                    <!-- <div class="oe_right oe_button_box" name="buttons" groups="base.group_user">
+                        <button name="attachment_tree_view" string="Documents" type="object"/>
+                    </div> -->
+
+                    <div class="oe_right oe_button_box" name="buttons" groups="base.group_user">
+	                    <!-- <button  class="oe_inline oe_stat_button" name="attachment_tree_view"  type="object" icon="fa-files-o">
+                            <field string="Documents" name="doc_count" widget="statinfo"/>
+                        </button> -->
+
+	                    <button name="action_view_fuel" attrs="{'invisible':[('fuel_logs_count','=',0)]}"
+                            type="object"
+                            class="oe_stat_button"
+                            icon="fa-flask"
+                            context="{'xml_id':'fleet_vehicle_log_fuel_act'}"
+                            help="show the fuel logs for this vehicle" >
+                            <field name="fuel_logs_count" widget="statinfo" string="Carburant"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <group>
+                            <field name="partner_id" readonly="1" attrs="{'invisible':[('state', '=', 'draft')]}"/>
+                            <field name="vendor_id" string="Station" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                        </group>
+                        <group>
+                            <field name="date_order"  required="1" string="Date de commande" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                            <field name="responsable" required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Commandes">
+                            <field name="fuel_order_ids" attrs="{'readonly':[('state', 'in', ['done','cancel'])]}" >
+                                <tree string="fuel Order Lines" colors="red:state=='open';grey:state=='cancel'"  >
+                                    <field name="vehicle_id"/>
+                                    <field name="entity" />
+                                    <field name="demandeur" />
+                                    <field name="qty_demandee" />
+                                    <field name="qty_totale" string="Quantité transferee"/>
+                                    <field name="pompiste" />
+                                     <field name="conducteur_id" />
+                                    <field name="state" string="Statut"/>
+                                    <field name="date_livraison" string="Date livraison"/>
+                                    <button name="return_action_to_open_fuel" string="Livrer" type="object"
+			                        context="{'xml_id':'fleet_vehicle_log_fuel_act'}"
+			                        states="open"/>
+
+
+ 			                        <!-- <button name="action_cancel" string="Annuler la ligne" type="object"
+			                        icon="gtk-stop"
+			                        states="done,draft,confirmed,approved"
+			                        groups="fleet.group_fleet_manager,fleet.group_fleet_user"/> -->
+                                </tree>
+                            </field>
+
+                            <div class="oe_clear"/>
+                            <field name="notes" class="oe_inline" placeholder="Observations ..."/>
+                        </page>
+
+                        <page string="Historique" attrs="{'invisible':[('state', '=', 'draft')]}"  >
+                        	<group>
+                        		<field name="date_confirmation" string="Confirmation de la demande" attrs="{'readonly':[('state','not in','confirmed')], 'invisible':[('state', 'in', ['draft'])]}" />
+	                        	<field name="date_validation" string="Validation de la demande" readonly="1"  attrs="{'invisible':[('state','not in',['open','done'])]}"/>
+	                        	<field name="date_fin" string="Fermeture de la commande" readonly="1"  attrs="{'invisible':[('state', 'not in', 'done')]}"/>
+                        	</group>
+                        </page>
+
+
+                    </notebook>
+                </sheet>
+                </form>
+            </field>
+        </record>
+
+	        <record id="view_fuel_order_tree" model="ir.ui.view">
+            <field name="name">fuel.order.tree</field>
+            <field name="model">fuel.order</field>
+            <field name="arch" type="xml">
+                <tree colors="blue:state=='draft';red:state=='open';grey:state=='cancel'" string="fuel Order">
+                    <field name="name" string="Reference"/>
+                    <field name="date_order" />
+                    <field name="partner_id" widget="selection"/>
+                    <field name="vendor_id" string="Station"/>
+                    <field name="responsable" />
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+
+
+<!-- debut fuel search -->
+
+        <record id="view_fuel_order_filter" model="ir.ui.view">
+            <field name="name">fuel.order.list.select</field>
+            <field name="model">fuel.order</field>
+            <field name="arch" type="xml">
+                <search string="Search fuel Order">
+                    <field name="name" string="Reference"/>
+                    <filter icon="terp-gtk-go-back-rtl" name="not_invoiced"  help="fleet orders that include lines not invoiced."/>
+                    <!-- <field name="create_uid"/> -->
+                    <group expand="0" string="Group By...">
+                    	<filter string="Date de commande" icon="terp-partner" domain="[]" context="{'group_by':'date_order'}"/>
+                        <filter string="Fournisseur" icon="terp-partner" domain="[]" context="{'group_by':'vendor_id'}"/>
+                        <filter string="Responsable" icon="terp-partner" domain="[]" context="{'group_by':'responsable'}"/>
+                        <filter string="Date de confirmation" icon="terp-gtk-jump-to-rtl" domain="[]" context="{'group_by':'date_confirmation'}"/>
+                        <filter string="Date de validation" icon="terp-go-month" domain="[]" context="{'group_by':'date_validation'}"/>
+                        <filter string="Fermeture de la commande" icon="terp-go-month" domain="[]" context="{'group_by':'date_fin'}"/>
+                        <filter string="Etat" icon="terp-stock_effects-object-colorize" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+<!-- fin fuel search -->
+
+<!-- menu Commande carburant -->
+
+	    <record id="fuel_order_action" model="ir.actions.act_window">
+			<field name="name">Bon de commande carburant</field>
+			<field name="res_model">fuel.order</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" ref="view_fuel_order_tree"/>
+			<!-- <field name="domain">[('type', '=', 'fuel')]</field>  -->
+		</record>
+
+        <menuitem
+		 name="Bon commande carburant" action="fuel_order_action"
+		 id="menu_fuelorder_form"
+		 parent="fleet.fleet_vehicles"
+		sequence="-1"
+		/>
+
+<!-- fin menu Expression de besoin -->
+
+    </data>
+</openerp>

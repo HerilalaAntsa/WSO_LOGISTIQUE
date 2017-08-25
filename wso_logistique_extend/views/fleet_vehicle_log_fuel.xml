@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model='ir.ui.view' id='fleet_vehicle_log_fuel_form2'>
+            <field name="name">fleet.vehicle.log.fuel.form</field>
+            <field name="model">fleet.vehicle.log.fuel</field>
+            <field name="inherit_id" ref="wso_logistique.fleet_vehicle_log_fuel_form2"/>
+            <field name="arch" type="xml">
+
+            	<xpath expr="//field[@name='amount']" position="replace" >
+					<field name="amount"  context="{'price_per_liter': price_per_liter}"/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='amount']" position="after" >
+					<field name="consommation" string="Derniere cons/100" readonly="1" />
+            	</xpath>
+
+            	<xpath expr="//label[@for='odometer']" position="before" >
+                    <field name="last_kilom" class="oe_inline" readonly="1" string="Dernier relevé kilomètrique"/>
+            	</xpath>
+
+            	<xpath expr="//group['Odometer Details']/div" position="after" >
+            		<label for="distance" string="Distance effectuée"/>
+            		<div>
+                        <field name="distance" class="oe_inline" readonly="1"/>
+                    </div>
+            	</xpath>
+
+            	<xpath expr="//label[@for='odometer']" position="replace" >
+            		<label for="odometer" string="Kilomètrage au compteur"/>
+            	</xpath>
+
+            	<!-- <xpath expr="//field[@name='appoint']" position="after" >
+            		<field name="qty_totale"
+            			   string="Total carburant"
+            			   on_change="onchange_qty_totale_amount_total(qty_totale,price_per_liter)"
+            			   context="{'price_per_liter': price_per_liter}"/>
+
+            			   <field name="qty_totale"
+            			   string="Total carburant"
+            			   on_change="onchange_qty_totale_amount_total(qty_totale,appoint,price_per_liter)"
+            			   context="{'price_per_liter': price_per_liter, 'appoint':appoint}"/>
+            	</xpath> -->
+
+            	<xpath expr="//field[@name='liter']" position="replace" >
+					<!-- <field name="liter" string="Quantité transferée (réservoir)" on_change="onchange_liter_qty_totale(liter,appoint)" context="{'appoint': appoint}"/> -->
+					<field name="liter" invisible="1" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='appoint']" position="replace" >
+            		<!-- <field name="appoint" on_change="onchange_appoint_qty_totale(appoint,liter)" context="{'liter': liter}"/> -->
+            		<field name="appoint"  context="{'qty_totale': qty_totale, 'liter':liter}"/>
+            		<field 	name="liter"
+							string="Quantité transferée (réservoir)"
+							context="{'appoint': appoint}"
+							attrs="{'readonly': [('state','=','done')]}"
+							/>
+				</xpath>
+
+            	<xpath expr="//field[@name='price_per_liter']" position="replace" >
+					<field name="price_per_liter" required="1"  context="{'qty_totale': qty_totale}"/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='fuel_type']" position="after" >
+
+					<field name="qty_totale"
+            			   string="Total carburant"
+            			   context="{'price_per_liter': price_per_liter, 'appoint':appoint}"/>
+            	</xpath>
+
+            	<xpath expr="//field[@name='conducteur_id']" position="before" >
+					<field name="marque_vehicle"  />
+					<field name="vehicle_consommation" groups="wso_logistique_extend.group_flotte_access" />
+            	</xpath>
+
+            	<xpath expr="//field[@name='date_fuel']" position="replace" >
+					<field name="date_fuel" widget="date"/>
+            	</xpath>
+
+ 			</field>
+        </record>
+
+        <menuitem name="Suivi d'activité"
+        		  parent="fleet.menu_root"
+        		  id="fleet_board_analyse"
+        		  sequence="2"
+        		  groups="fleet.group_fleet_manager"/>
+
+	    <menuitem id="menu_fleet_reporting_costs_extend"
+              parent="fleet_board_analyse"
+              action="fleet.action_fleet_reporting_costs"
+              sequence="1"
+              name="Analyse des dépenses"
+              groups="fleet.group_fleet_manager"/>
+
+	</data>
+</openerp>

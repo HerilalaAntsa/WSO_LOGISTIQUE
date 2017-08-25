@@ -7,18 +7,23 @@
     'author': 'Dzama Consulting (herilala.antsa@gmail.com)',
     'website': 'http://www.dzama.mg',
     'license': 'AGPL-3',
-    'depends': ['wso_parc_auto','web_google_maps'],
+    'depends': ['wso_parc_auto','web_google_maps','wso_fuel_gestion','sale'],
     'init_xml': [],
     'demo_xml': [],
     'data': [
 #                 'security\ir.model.access.csv',
+                'views/google_places_template.xml',
                 'views/feuille_de_route.xml',
-                'views/wso_arret.xml',
-#                 'views\wso_trajet.xml',
-#                 'views/distrib_lieu.xml'
-#                 'views\mouv.xml',
-                'views/frais_de_mission.xml'
+                'views/frais_de_mission.xml',
+# #                 'views/wso_arret.xml',
+# #                 'views\wso_trajet.xml',
+# #                 'views/distrib_lieu.xml'
+# #                 'views\mouv.xml',
+                'views/fleet_view.xml',
+                'views/res_partner_view.xml',
+                'views/fiche_carburant.xml'
             ],
+#     'qweb': ['static/src/xml/widget_places.xml'],
     'active': False,
     'installable': True,
 }

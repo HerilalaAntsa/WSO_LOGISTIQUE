@@ -4,12 +4,38 @@
             <field name="name">wso.flotte.route.view.form</field>
             <field name="model">wso.flotte.route</field>
             <field name="arch" type="xml">
-                 <form string="Feuille de route Line" >
+                 <form string="Feuille de route" >
                  	<header>
-                 		<button name="create_frais_mission" string="Frais de dépense" type="object"/>
+                 		<button string="Frais de dépense"
+                 			name="create_frais_mission"
+                 			type="object"
+                 			class="btn btn-primary"
+                 			context="{'feuille_de_route_id': id}"/>
                  		<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,open,done,cancel"/>
+
+                  		<button string="Fiche de carburant"
+                 			name="create_fiche_carburant"
+                 			type="object"
+                 			class="btn btn-primary"/>
+                 		<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,open,done,cancel"/>
+
                  	</header>
                     <sheet>
+	                	<field name="frais_de_mission_ids" invisible="1"/>
+	                	<field name="fiche_carburant_ids" invisible="1"/>
+		                <div class="oe_title">
+		                	<h1>
+	                            <field name="name" default_focus="1" placeholder="Name" readonly="1"/>
+	                        </h1>
+		                </div>
+                        <div name="button_box" position="inside">
+		                    <button name="show_frais_mission" type="object"
+		                        class="oe_stat_button"
+		                        icon="fa-pencil-square-o" string="Frais de mission" attrs="{'invisible':[('frais_de_mission_ids', '=', [])]}"/>
+   		                    <button name="show_fiche_carburant" type="object"
+		                        class="oe_stat_button"
+		                        icon="fa-pencil-square-o" string="Fiche de carburant" attrs="{'invisible':[('fiche_carburant_ids', '=', [])]}"/>
+		                </div>
                         <group>
                             <group>
                                		<field name="vehicle_id"  required="1" attrs="{'readonly':[('state', 'not in', ['draft','confirmed'])]}"/>
@@ -25,21 +51,48 @@
                                     <field name="date_depart" string="Date de départ" attrs="{'required':[('state','=','open')], 'invisible':[('state','=','cancel')], 'readonly':[('state', '=', ['done'])]}"/>
                                     <field name="date_retour" string="Date de retour" attrs="{'required':[('state','=','done')], 'invisible':[('state','=','cancel')], 'readonly':[('state', '=', ['done'])]}"/>
                                     <field name="type_mission" string="Mission" required="1" attrs="{'readonly':[('state', '=', 'done')]}"/>
-                                    <field name="passager"
-                                   		string="Nombre de passager(s)" required="1"
-                                   		attrs="{'readonly':[('state', '=', 'done')]}"/>
                            </group>
                            <group>
-
+								<field name="passager"
+                              		string="Nombre de passager(s)" readonly="1"/>
+                           </group>
+                           <group>
+                              	<field name="responsable_zone"/>
+                              	<!-- <field name="responsable_zone" class="oe_read_only" attrs="{'invisible': [('responsable_zone', '=', False)]}"/> -->
+                              	<field name="commercial"/>
+                              	<!-- <field name="commercial" class="oe_read_only" attrs="{'invisible': [('commercial', '=', False)]}"/> -->
+                              	<field name="mobile_1"/>
+                              	<!-- <field name="mobile_1" class="oe_read_only" attrs="{'invisible': [('mobile_1', '=', False)]}"/> -->
+                              	<field name="mobile_2"/>
+                              	<!-- <field name="mobile_2" class="oe_read_only" attrs="{'invisible': [('mobile_2', '=', False)]}"/> -->
                            </group>
                         </group>
                         <h2>Ordre de mission</h2>
+                           <group>
+		                        <button name="action_map_route" type="object"
+			                        class="oe_stat_button" context="{'route_direction': True, 'many_directions': True}"
+			                        icon="fa-map-signs" string="Route" attrs="{'invisible': [('commande_ids', '=', [])]}"/>
+                           </group>
+	                       <group>
+	                           <group>
+			                		<field name="total_distance" string="Distance totale (km)" attrs="{'invisible':[('total_distance', '=', 0)]}"/>
+	                           </group>
+			                	<group>
+			                		<field name="marge_km"/>
+			                	</group>
+			                </group>
+			                <group>
+			                	<group>
+			                		<field name="estimation_litre" string="Estimation de carburant (l)" attrs="{'invisible':[('estimation_litre', '=', 0)]}"/>
+			                	</group>
+			                </group>
                         <group>
                             <field name="commande_ids" nolabel="1">
                                 <tree editable="bottom">
-                                    <field name="lieu"/>
                                     <field name="client_id" string="client"/>
+                                    <field name="lieu"/>
                                     <field name="quantite"/>
+                                    <field name="facture"/>
                                     <field name="date_arrivee"/>
                                     <field name="date_depart"/>
                                 </tree>
@@ -89,9 +142,6 @@
 	                            </page> -->
 	                        </notebook>
 	                    </group>
-                        <group>
-                            <field name="name"/>
-                        </group>
                     </sheet>
                 </form>
             </field>
@@ -126,5 +176,11 @@
 			 id="feuille_de_route_view_menu"
 			 parent="wso_flotte_fleet_logistique"
 			 sequence="1"
+			/>
+		<menuitem
+			 name="Client" action="sale.act_res_partner_2_sale_order"
+			 id="client_view_menu"
+			 parent="wso_flotte_fleet_logistique"
+			 sequence="-1"
 			/>
 </odoo>

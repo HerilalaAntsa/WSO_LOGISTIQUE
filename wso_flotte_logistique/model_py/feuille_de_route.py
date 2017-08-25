@@ -10,7 +10,7 @@ Created on July 2017
 
 @author: Antsa
 '''
-from odoo import  fields, models, api
+from odoo import  fields, models, api, exceptions
 import datetime
 from odoo import tools
 from odoo.tools.translate import _
@@ -24,7 +24,7 @@ class wso_flotte_route(models.Model):
     _name = "wso.flotte.route"
     _description = "Ordre de mission pour la livraison de la distribution Vidzar"
 
-    name = fields.Text(string='Remarque sur le véhicule')
+    name = fields.Text(string='Référence feuille de route')
     vehicle_id = fields.Many2one('fleet.vehicle', string='Vehicule', required=True)
     conducteur_id = fields.Many2one('fleet.driver', string='Conducteur')    # set by a @OnChange('vehicule_id')
 
@@ -32,16 +32,18 @@ class wso_flotte_route(models.Model):
     commercial = fields.Char('Commercial', size=128)
     mobile_1 = fields.Char('Mobile 1', size=128)
     mobile_2 = fields.Char('Mobile 2', size=128)
-    facture = fields.Char('N° Facture', size=128)
 
-    date_saisie = fields.Date('Date de saisie', size=128)
+    date_saisie = fields.Date('Date de saisie', size=128, default=fields.Date.context_today)
     date_depart_prevue = fields.Date('Date de départ prévu', size=128)
     date_retour_prevue = fields.Date('Date de retour prévu', size=128)
     date_depart = fields.Date('Date de départ', size=128)
     date_retour = fields.Date('Date de retour', size=128)
 
     destination_id = fields.Many2one('wso.flotte.destination', string='Destination', required=True)
-    passager = fields.Integer('Nombre de passagers')
+    passager = fields.Integer('Nombre de passagers', readonly=True,)
+    total_distance = fields.Float(string='Distance totale (km)')
+    marge_km = fields.Float(string='Marge (km)')
+    estimation_litre = fields.Float(compute='_compute_estimation_litre', string='Estimation de quantité de carburant (l)')
     type_mission = fields.Selection([
                                         ('livraison', 'Livraison'),
                                         ('transport', 'Transport personnels')
@@ -63,8 +65,14 @@ class wso_flotte_route(models.Model):
     commande_ids = fields.One2many('wso.flotte.commande', 'feuille_de_route_id', string='Ordre de mission')
     arret_ids = fields.One2many('wso.flotte.arret', 'feuille_de_route_id', string='Liste des arrêts')
     trajet_ids = fields.One2many('wso.flotte.trajet', 'feuille_de_route_id', string='Liste des trajets')
-    # Une feuille de route ne pourra avoir qu'un seul frais de mission (aucun doublon)
+    # Une feuille de route ne pourra avoir qu'un seul frais de mission (aucun doublon) : cf 'frais_de_mission.py'
     frais_de_mission_ids = fields.One2many('wso.flotte.frais.mission', 'feuille_de_route_id', string='Frais de mission')
+
+    fiche_carburant_ids = fields.One2many('fleet.vehicle.fuel.gestion', 'feuille_de_route_id', string='Fiche de carburant')
+
+    _sql_constraints = [
+        ('date_prévue_check', "CHECK ( (date_depart_prevue <= date_retour_prevue))", "La date de départ prévue doit être inférieur à la date de retour prévue.")
+    ]
 
     @api.depends('vehicle_id')
     def _get_vehicule_detail(self):
@@ -79,28 +87,112 @@ class wso_flotte_route(models.Model):
 
         else:
             voiture = self.vehicle_id
-            observation = voiture.observation
 
             self.conducteur_id = voiture.conducteur_id.id
-            self.name = observation
+            self.name = "FR"+self.vehicle_id.id+"2017"
+
+    @api.onchange('frais_de_mission_ids')
+    def set_state_to_confirmed(self):
+        if self.frais_de_mission_ids:
+            self.write({'state': 'confirmed'})
 
     @api.multi
     def create_frais_mission(self):
-        form_id = self.env.ref('wso_flotte_logistique.view_frais_mission_form').id
-        tree_id = self.env.ref('wso_flotte_logistique.view_frais_mission_tree').id
-        context =  {'default_invoice_id': self.id, 'default_res_id': self.id}
+        res = self.env['ir.actions.act_window'].for_xml_id('wso_flotte_logistique', 'wso_flotte_frais_mission_action')
+        res['domain'] = [('feuille_de_route_id','=', self.id)]
+        res['context'] = {'default_res_model': 'wso_flotte_logistique', 'default_feuille_de_route_id': self.id}
+        return res
+
+    @api.multi
+    def show_frais_mission(self):
+        res = self.env['ir.actions.act_window'].for_xml_id('wso_flotte_logistique', 'wso_flotte_frais_mission_tree_action')
+        res['domain'] = [('feuille_de_route_id','=', self.id)]
+        res['context'] = {'default_res_model': 'wso_flotte_logistique', 'default_feuille_de_route_id': self.id}
+        return res
+
+    @api.multi
+    def create_fiche_carburant(self):
+        res = self.env['ir.actions.act_window'].for_xml_id('wso_flotte_logistique', 'fuel_vehicle_gestion_action')
+        res['domain'] = [('feuille_de_route_id','=', self.id)]
+        res['context'] = {'default_res_model': 'wso_flotte_logistique', 'default_feuille_de_route_id': self.id}
+        return res
+
+    @api.multi
+    def show_fiche_carburant(self):
+        res = self.env['ir.actions.act_window'].for_xml_id('wso_flotte_logistique', 'fuel_vehicle_gestion_action_tree')
+        return res
+
+    @api.multi
+    def action_map_route(self):
+        self.ensure_one()
+        if not self.commande_ids:
+            raise exceptions.Warning(_(
+                'No order yet'))
+        user_id = self.commande_ids[0].client_id.env.user.partner_id
+        if not all([user_id.partner_longitude, user_id.partner_latitude]):
+            raise exceptions.Warning(_(
+                'You have not defined the admin geolocation'))
+        context = self.env.context.copy()
+        partner_origin_temp = user_id;
+        i=0
+        num = ''
+        partners = []
+        # For displaying map route for all orders from Origin (admin) to each client, iteratly
+        for com in self.commande_ids:
+            num = str(i)
+            context.update({
+                'origin_latitude'+num: partner_origin_temp.partner_latitude,
+                'origin_longitude'+num: partner_origin_temp.partner_longitude,
+                'destination_latitude'+num: com.client_id.partner_latitude,
+                'destination_longitude'+num: com.client_id.partner_longitude,
+                'total_count': i+1
+            })
+            partners.append(partner_origin_temp.id)
+            partners.append(com.id)
+            # the client become the origin to another client
+            partner_origin_temp = com.client_id
+            i+=1
+            num = str(i)
+#       Retour vers l'origine
+        context.update({
+                'default_partner_id':self.id,
+                'origin_latitude'+num: partner_origin_temp.partner_latitude,
+                'origin_longitude'+num: partner_origin_temp.partner_longitude,
+                'destination_latitude'+num: user_id.partner_latitude,
+                'destination_longitude'+num: user_id.partner_longitude,
+                'show_orders': True
+            })
+        view_map_id = self.env.ref('web_google_maps.view_partner_map')
         return {
-            'name':'creer_frais_de_mission',
-            'view_type':'form',
-            'view_mode':'form',
-            'views' : [(form_id,'form')],
-            'res_model':'wso.flotte.frais.mission',
-            'view_id':form_id,
-            'type':'ir.actions.act_window',
-            'res_id':self.id,
-            'target':'current',
-            'context':context,
+            'name': _('Map'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'res.partner',
+            'view_mode': 'map',
+            'view_type': 'map',
+            'views': [(view_map_id.id, 'map')],
+            'context': context,
+            'domain': [('id', 'in', partners)]
         }
+
+    @api.model
+    def set_total_distance(self, value, id):
+        if not id:
+            raise exceptions.Warning(_(
+                'Feuille de route introuvable introuvable.'))
+        partner_id = self.env['wso.flotte.route'].browse(id)
+        if isinstance(value, float):
+            partner_id.total_distance = value
+            return partner_id.id
+        else:
+            return False
+
+    @api.onchange('total_distance')
+    def _compute_estimation_litre(self):
+        vehicle = self.vehicle_id
+        total = self.total_distance
+        if(self.marge_km) : total = self.marge_km + self.total_distance
+        if(vehicle.consommation):
+            self.estimation_litre = (total*vehicle.consommation)/100
 
     @api.multi
     def action_quotation_send(self):
@@ -137,6 +229,18 @@ class wso_flotte_route(models.Model):
             'target': 'new',
             'context': ctx,
         }
+
+    @api.onchange('responsable_zone','commercial','mobile_1','mobile_2')
+    def _responsable_zone(self):
+        self.passager = 0
+        if self.responsable_zone:
+            self.passager += 1
+        if self.commercial:
+            self.passager += 1
+        if self.mobile_1:
+            self.passager += 1
+        if self.mobile_2:
+            self.passager += 1
 
 wso_flotte_route()
 
