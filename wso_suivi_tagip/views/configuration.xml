@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <!-- TAGIP config wizard -->
+	    <record id="tagip_config_settings" model="ir.ui.view">
+	        <field name="name">TAGIP settings</field>
+	        <field name="model">wso.tagip.config</field>
+	        <field name="arch" type="xml">
+	            <form string="Configure TAGIP report" class="oe_form_configuration" name="tagip_report_config_form">
+	                <header>
+	                	<h1>Configuration pour le téléchargement des comptes rendus par TAGIP</h1>
+	                    <button string="Enregistrer" type="object" name="generate_configuration" class="oe_highlight"/>
+	                    <button string="Cancel" type="object" special="cancel"  class="oe_link"/>
+	                </header>
+	                <div id="main"/>
+			    	<newline/>
+		                <group>
+		                	<field name="db_name" string="Nom de la base de donnée"/>
+							<field name="db_user"/>
+		                	<field name="db_pass"/>
+		                	<field name="db_port"/>
+		                	<field name="db_host"/>
+		                	<field name="place_unzip"/>
+							<field name="mail_user"/>
+							<field name="mail_pass"/>
+							<field name="mail_host"/>
+		                 </group>
+                         <group name="tagip_report_update">
+			                <label for="id" string="Auto-download Reports"/>
+			                <div name="tagip_report_update">
+			                    <field name="auto_tagip_report_up" class="oe_inline"/>
+			                    <label for="auto_tagip_report_up"/>
+			                </div>
+			            </group>
+			        <newline/>
+	            </form>
+	        </field>
+	    </record>
+
+	    <record id="action_tagip_config" model="ir.actions.act_window">
+	        <field name="name">Configure TAGIP Report</field>
+	        <field name="type">ir.actions.act_window</field>
+	        <field name="res_model">wso.tagip.config</field>
+	        <field name="view_id" ref="tagip_config_settings"/>
+	        <field name="view_mode">form</field>
+	        <field name="target">inline</field>
+	    </record>
+
+		<menuitem
+			name="Compte rendu TAGIP"
+			action="action_tagip_config"
+			parent="fleet.fleet_configuration"
+			id="fleet_tagip_config_menu"
+			groups="base.group_no_one"/>
+</odoo>

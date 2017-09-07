@@ -70,9 +70,18 @@ class wso_flotte_route(models.Model):
 
     fiche_carburant_ids = fields.One2many('fleet.vehicle.fuel.gestion', 'feuille_de_route_id', string='Fiche de carburant')
 
+    number = fields.Char(string='Numero', default='/', size=64, required=True, readonly=True, states={'draft': [('readonly', False)], 'done': [('readonly', False)]}, select=True)
+
     _sql_constraints = [
         ('date_prévue_check', "CHECK ( (date_depart_prevue <= date_retour_prevue))", "La date de départ prévue doit être inférieur à la date de retour prévue.")
     ]
+
+    @api.model
+    def create(self, vals):
+        if vals.get('number','/')=='/':
+            vals['number'] = self.env['ir.sequence'].get('wso.flotte.route') or '/'
+            vals['name'] = vals['number']
+        return super(wso_flotte_route, self).create(vals)
 
     @api.depends('vehicle_id')
     def _get_vehicule_detail(self):
@@ -89,7 +98,6 @@ class wso_flotte_route(models.Model):
             voiture = self.vehicle_id
 
             self.conducteur_id = voiture.conducteur_id.id
-            self.name = "FR"+self.vehicle_id.id+"2017"
 
     @api.onchange('frais_de_mission_ids')
     def set_state_to_confirmed(self):

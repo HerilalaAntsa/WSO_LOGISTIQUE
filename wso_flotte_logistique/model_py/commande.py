@@ -27,11 +27,10 @@ class wso_commande (models.Model):
     lieu = fields.Char(compute='_get_client_street', string='Lieu de livraison')
     facture = fields.Char('N° Facture', size=128, required=True)
 
-@api.multi
-@api.onchange('client_id')
-def _get_client_street(self):
-    for cli in self:
-        if cli.client_id:
-            lieu = cli.client_id.street
+    @api.multi
+    def _get_client_street(self):
+        for cli in self:
+            if cli.client_id:
+                lieu = cli.client_id.street
 
 wso_commande()

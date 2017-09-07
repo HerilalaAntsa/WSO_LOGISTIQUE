@@ -2,13 +2,13 @@
 <odoo>
     <data>
         <record model="ir.cron" id="wso_ir_cron_currency_update_every_day">
-            <field name="name">WISO, Currency Rate Update</field>
+            <field name="name">WISO, TAGIP Reports Download</field>
             <field name="interval_number">1</field>
             <field name="interval_type">days</field>
             <field name="numbercall">-1</field>
             <field name="doall" eval="False"/>
-            <field name="model" eval="'res.currency.rate'"/>
-            <field name="function" eval="'run_currency_update'"/>
+            <field name="model" eval="'wso.tagip.download.reports'"/>
+            <field name="function" eval="'_run_currency_tagip'"/>
             <field name="args">()</field>
         </record>
     </data>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+
+
+     <record id="seq_feuille_de_route_vdz" model="ir.sequence">
+            <field name="name">Feuille de route VIDZAR</field>
+            <field name="code">wso.flotte.route</field>
+            <field name="prefix">VDZ/FDR/%(year)s/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+
+    </data>
+</odoo>
