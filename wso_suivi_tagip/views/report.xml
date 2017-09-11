@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <!-- TAGIP mouvement -->
+    	<record id="report_tree_view" model="ir.ui.view">
+            <field name="name">wso.tagip.report.tree</field>
+            <field name="model">wso.tagip.report</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Comptes-rendus">
+		            <field name="name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id='tagip_mouvement_tree_view' model='ir.ui.view'>
+            <field name="name">wso.tagip.report.mouvement.tree</field>
+            <field name="model">wso.tagip.report.mouvement</field>
+            <field name="arch" type="xml">
+                <tree string="Mouvements">
+                    <field name="report_id" />
+                    <field name="vehicle_id" />
+                    <field name="date_debut" />
+                    <field name="date_fin" />
+                    <field name="duree_roulage" />
+                    <field name="dist_parcourue" />
+                    <field name="vitesse_moy" />
+                    <field name="vitesse_max" />
+                    <field name="duree_arret" />
+                    <field name="nb_arret" />
+                    <field name="nb_arret" />
+                </tree>
+            </field>
+        </record>
+
+   		<record id="mouvement_liv_action" model="ir.actions.act_window">
+            <field name="name">DZA.LIV.TNA</field>
+            <field name="res_model">wso.tagip.report</field>
+            <field name="domain">[('work_for','=','liv')]</field>
+            <field name="context">{"search_default_groupby_mouvement" : True, 'default_work_for': 'liv'}</field>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="report_tree_view"/>
+        </record>
+
+   		<record id="mouvement_moto_action" model="ir.actions.act_window">
+            <field name="name">DZA.MOTO.TNA</field>
+            <field name="res_model">wso.tagip.report</field>
+            <field name="domain">[('work_for','=','moto')]</field>
+            <field name="context">{'default_work_for': 'moto'}</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+        <record id="mouvement_suv_action" model="ir.actions.act_window">
+            <field name="name">DZA.SUV.TNA</field>
+            <field name="res_model">wso.tagip.report</field>
+            <field name="domain">[('work_for','=','suv')]</field>
+            <field name="context">{'default_work_for': 'suv'}</field>
+            <field name="view_mode">tree</field>
+        </record>
+
+		<menuitem name="Suivi TAGIP" parent="fleet.menu_root" id="wso_tagip_suivi_menu" />
+		<menuitem
+			name="Mouvement"
+			parent="wso_tagip_suivi_menu"
+			id="tagip_mouvement_menu"/>
+
+		<menuitem
+            id="menu_mouvement_liv_view"
+            name="DZA_LIV_TNA"
+            parent="tagip_mouvement_menu" sequence="1"
+            action="mouvement_liv_action"
+            />
+
+		<menuitem
+            id="menu_mouvement_MOTO_view"
+            name="DZA_MOTO_TNA"
+            parent="tagip_mouvement_menu" sequence="2"
+            action="mouvement_moto_action"
+            />
+
+		<menuitem
+            id="menu_mouvement_suv_view"
+            name="DZA_SUV_TNA"
+            parent="tagip_mouvement_menu" sequence="3"
+            action="mouvement_suv_action"
+            />
+</odoo>

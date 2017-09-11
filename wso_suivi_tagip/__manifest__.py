@@ -21,6 +21,7 @@
     'demo_xml': [],
     'data': [
         'views/configuration.xml',
+        'views/report.xml',
         'data/cron.xml',
     ],
     'active': False,

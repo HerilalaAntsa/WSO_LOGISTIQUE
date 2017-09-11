@@ -31,6 +31,11 @@
 			                    <label for="auto_tagip_report_up"/>
 			                </div>
 			            </group>
+			            <group>
+							<field name="report_cat"/>
+							<field name="frequence"/>
+							<field name="flotte_type"/>
+			            </group>
 			        <newline/>
 	            </form>
 	        </field>
